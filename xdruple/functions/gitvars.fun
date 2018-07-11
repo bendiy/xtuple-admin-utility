@@ -1,37 +1,18 @@
 #!/bin/bash
-# Functions: loadcrm_gitconfig checkcrm_gitconfig
 
-#if type "composer" > /dev/null; then
-# source ../logging.sh
 install_composer() {
-
-if type -p "composer" > /dev/null; then
-   echo "composer found"
-else
-   msgbox "Need to install composer and dependencies, this may prompt for your github user and password."
-# Variables for xdruple-server
-if [[ ! -d $(pwd)/xdruple-server/scripts ]]; then
-git submodule update --init --recursive
-#rm -rf $(pwd)/xdruple-server
-#git clone https://github.com/xtuple/xdruple-server
-fi
-
-export SCRIPTS_DIR=$(pwd)/xdruple-server/scripts
-export CONFIG_DIR=$(pwd)/xdruple-server/config
-
-export TYPE='server'
-export DEPLOYER_NAME=`whoami`
-export TIMEZONE=America/New_York
-
-#sudo locale-gen en_US.UTF-8 && \
-#export DEBIAN_FRONTEND=noninteractive
-#sudo dpkg-reconfigure locales && \
-#sudo echo ${TIMEZONE} > /etc/timezone
-sudo timedatectl set-timezone ${TIMEZONE}
-
-source ${SCRIPTS_DIR}/php.sh ${TYPE} ${TIMEZONE} ${DEPLOYER_NAME} ${GITHUB_TOKEN} ${CONFIG_DIR}
-
-fi
+    if [[ type -p "composer" > /dev/null ]]; then
+       echo "Composer found"
+    else
+        msgbox "Need to install composer and dependencies, this may prompt for your Github user and password."
+        export SCRIPTS_DIR=$(pwd)/scripts/xtc
+        export CONFIG_DIR=$(pwd)/config
+        export TYPE='server'
+        export DEPLOYER_NAME=`whoami`
+        export TIMEZONE=America/New_York
+        sudo timedatectl set-timezone ${TIMEZONE}
+        source ${SCRIPTS_DIR}/php.sh ${TYPE} ${TIMEZONE} ${DEPLOYER_NAME} ${GITHUB_TOKEN} ${CONFIG_DIR}
+    fi
 }
 
 
