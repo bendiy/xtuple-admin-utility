@@ -1,0 +1,289 @@
+= xTuple Admin Utility
+:toc: left
+:toclevels: 2
+:icons: font
+:source-highlighter: coderay
+:source-language: bash
+
+== xTupleCommerce Server installation
+
+[NOTE]
+This can be used for any hosting provider installation,
+as long as you have access as a `root` user.
+Amazon provides `ubuntu` user instead of `root` user,
+so additional steps need to be taken to switch and act as a `root` user.
+DigitalOcean service provider was used to write this documentation.
+
+=== Assumptions
+
+* `xtuple-admin-utility` is cloned/downloaded on your machine.
++
+.Example: clone `xtuple-admin-utility`.
+[source,bash]
+----
+mkdir -p ~/Vagrant
+&& cd ~/Vagrant
+&& git clone git@github.com:amikheychik/xtuple-admin-utility.git
+----
+
+=== Step 0. Preparation.
+
+==== SSH keys
+
+Create two pairs of SSH keys:
+for the `root` and `deployer` users on a new server.
+You use `./scripts/xtc/host/keygen.sh` script.
+It accepts exactly 3 parameters in a strict order:
+an email, a hostname, and a root user password.
+Deployer key password would be empty,
+as it should work without prompt for the scripts on the server side.
+
+.Example: generating a `root` and `deployer` keypairs.
+[source,bash]
+----
+./scripts/xtc/host/keygen.sh \
+    developer@example.com \
+    example.com \
+    'A-Long-And-Secure-Password-For-root-User-Keypair' # <1>
+----
+<1> Keys are created in `~/.ssh/xtau/example.com` directory.
+
+Add SSH keys to the keychain.
+
+.Example: adding new SSH keys to the keychain on MacOSX
+[source,bash]
+----
+ssh-add -K ~/.ssh/xtau/example.com/root_rsa # <1>
+ssh-add -K ~/.ssh/xtau/example.com/deployer_rsa
+----
+<1> Key passphrase will be asked for the `root` key
+(`A-Long-And-Secure-Password-For-root-User-Keypair` in example above).
+
+==== Update SSH config
+
+Binding SSH keys to domains will simplify work with servers.
+Otherwise `-i ~/.ssh/path/to/key` parameter would be required
+for `scp` and `ssh` commands.
+
+Edit your `~/.ssh/config` and add:
+
+[source,text]
+----
+# example.com
+Host example.xtuplecloud.com
+    User root
+    IdentityFile ~/.ssh/example.com/root_rsa
+Host example.xtuplecloud.com
+    User deployer
+    IdentityFile ~/.ssh/example.com/deployer_rsa
+----
+
+==== Create a Github token
+
+Github token is used to access private xTuple repositories.
+Use https://help.github.com/articles/creating-an-access-token-for-command-line-use[Github documentation]
+to learn how to create a new token.
+
+Generate a new token for each server,
+so it can be easily revoked,
+if compromised.
+
+==== Register deployer key as a deployment key for the repository
+
+Copy `deployer` public key
+and add it to the project repository as a deployment key in a read-only mode.
+
+.Example: copying deployer public key to the clipboard on *MacOSX*
+[source,bash]
+----
+pbcopy < ~/.ssh/xtau/example.com/deployer_rsa.pub
+----
+
+Learn more about deployment keys on
+https://developer.github.com/v3/guides/managing-deploy-keys/#deploy-keys[Github documentation].
+
+[IMPORTANT]
+Github allows only *one* deployment key for the whole Github,
+so each repository *must* have a different key.
+
+=== Step 1. Create a droplet (server).
+
+* Distribution: `16.04 x64` is required.
+* Size: `1Gb` is required, `2Gb` is recommended.
+* Datacenter: use the closest to your customer to minimize connection latency.
+* Additional options: backups are recommended.
+* SSH keys: add the `root` public key created during the preparation phase.
+* Hostname: for convenience, use the same hostname as for key generation
+(e.g. `example.com`)
+
+Once the server is created,
+copy the server IP address
+and setup you DNS to point the hostname to this IP
+(or edit your `/etc/hosts` file).
+
+=== Step 2. Upload initial files.
+
+Upload `server.sh` script and `deployer` keypair
+to the server's `root` home directory.
+
+.Example: uploading `server.sh` and `deployer` keypair.
+[source,bash]
+----
+scp ./scripts/xtc/server.sh root@example.com:
+scp ~/.ssh/xtau/example.com/deployer_rsa root@example.com:
+scp ~/.ssh/xtau/example.com/deployer_rsa.pub root@example.com:
+ssh root@example.com "ls -la" # <1>
+----
+<1> Checks that all three files are in the `root` user home directory.
+
+=== Step 3. Server provisioning [[xtc-server-step3]]
+
+`server.sh` requires 10 parameters in the strict order:
+
+. Timezone.
+Must be one of the
+https://en.wikipedia.org/wiki/List_of_tz_database_time_zones[Linux Timezones].
+Timezone doesn't have to match the timezone of the server location,
+e.g. if the server was created in NYC,
+timezone may be `America/Chicago`.
+
+. Root user password.
+This is the password for `root` user on the server,
+not for its SSH key.
+
+. Github access token.
+Token created during the preparation phase.
+
+. Deployer user password.
+This is the password for `deployer` user,
+not for its SSH key.
+
+. Server hostname.
+Provide primary domain for this server, e.g. `example.com`.
+
+. Server alias hostname.
+Technical domain,
+usually the same as the hostname used to create SSH keys,
+e.g. `example.xtuplecloud.com`
+(hostname and alias hostname may match).
+Development, stage and production domains will be based on the alias,
+e.g. `dev.example.xtuplecloud.com`,
+`stage.example.xtuplecloud.com`,
+`live.example.xtuplecloud.com`.
+
+. Development DB password.
+Password for the `development` DB/user in Postgres.
+
+. Stage DB password.
+Password for the `stage` DB/user in Postgres.
+. Production DB password.
+Password for the `production` DB/user in Postgres.
+
+. HTTP authorization password.
+Password to access dev, stage and live sub-domains.
+HTTP user is `xtuple`.
+
+.Example: running `server.sh`
+[source,bash]
+----
+./server.sh \
+    'America/New_York' \
+    'Very-Strong-root-User-Password' \
+    'Github-Token' \
+    'Very-Strong-deployer-User-Password' \
+    example.com \
+    example.xtuplecloud.com \
+    'development-db-password' \
+    'stage-db-password' \
+    'production-db-password' \
+    'http-auth-passwrd'
+----
+
+After installation is completed,
+check that you can SSH as both `root` and `deployer` users:
+`ssh deployer@example.xtuplecloud.com`.
+
+Update your DNS or `/etc/hosts` file to point hostname,
+alias hostname and dev/stage/live sub-domains
+(e.g. `example.com`, `example.xtuplecloud.com`,
+`dev.example.xtuplecloud.com`, `stage.example.xtuplecloud.com`,
+and `live.example.xtuplecloud.com`)
+to the server IP.
+
+=== Step 4. Drupal installation
+
+There are 3 directories in `/opt/xtuple/commerce`:
+`dev`, `stage` and `live` for development, pilot and production installations.
+The purpose of a development installation is
+to demonstrate working system connected
+to a verified and correct ERP system.
+The purpose of a stage/pilot installation is
+to demonstrate working system connected
+to an actual customer's ERP (backup)
+and to prepare marketing content before original launch of the system.
+
+Each directory is owned by the `deployer` user,
+but `/opt/xtuple/commerce` is owned by the `root` user,
+so the `deployer` user can't create or remove directories.
+
+Before Drupal installation,
+make sure to have a `.p12` key on the server.
+`/var/xtuple/keys` directory is used to keep all those keys.
+
+Proceed with the installation:
+login as a `deployer` user and
+navigate to the installation directory
+(e.g. `ssh deployer@example.xtuplecloud.com`
+and `cd /opt/xtuple/commerce/dev`)
+
+Clone project's code into the directory:
+e.g. `git clone git@github.com:xtuple/flywheel.git ./`
+(note: `./` in the end,
+as the code must be clone in that directory,
+not into a `flywheel` subdirectory).
+
+Install PHP dependencies and prepare directories structure: `composer install`
+
+Edit the parameters in `./application/config/environment.xml`
+(see
+https://github.com/xtuple/php-xdruple-commerce/blob/master/docs/index.adoc#configuration-environment[xTupleCommerce documentation]
+for more information about the parameters).
+
+Run Drupal installation command.
+
+Example: installing xTupleCommerce on development installation.
+[source,bash]
+----
+./console.php install:drupal \
+  --db-name='development' \
+  --db-user='development' \
+  --db-pass='development-db-password' \
+  --user-pass='Developer-User-Password' \
+  --site-mail='developer@example.com' \
+  --site-name="Example - Development" # <1>
+----
+<1> DB password should match the password entered
+during <<xtc-server-step3,server provisioning>>.
+
+Once installation is finished,
+SSH as a `root` user and change `web` directory ownership and permissions:
+
+.Example: changing `web` directories permissions for development installation.
+[source,bash]
+----
+ssh root@example.xtuplecloud.com
+# On the server
+chown -R www-data:www-data /opt/xtuple/commerce/dev/web && \
+chmod -R 775 /opt/xtuple/commerce/dev/web
+----
+
+Now you can navigate to the site in your browser
+(e.g. `dev.example.xtuplecloud.com`).
+
+[NOTE]
+To update Drupal installation with fresh code,
+login as a `deployer`,
+navigate to the installation directory
+and run `./console.php update:all` command.
+Read more about updating existing projects
+in https://github.com/xtuple/php-xdruple-commerce/blob/master/docs/index.adoc#update-an-existing-project[xTupleCommerce documentation]
