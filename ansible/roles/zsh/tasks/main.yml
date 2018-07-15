@@ -1,0 +1,16 @@
+---
+
+- name: Install ZSH
+  apt:
+    name: zsh
+    state: latest
+
+- name: Install and configure Oh-My-ZSH for {{ deployer_name }}
+  include_tasks: oh_my_zsh.yml
+  vars:
+    user: '{{ deployer_name }}'
+- name: Install and configure Oh-My-ZSH for {{ provision_user }}
+  include_tasks: oh_my_zsh.yml
+  when: provision_user != deployer_name
+  vars:
+    user: '{{ provision_user }}'

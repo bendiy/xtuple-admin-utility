@@ -1,0 +1,26 @@
+---
+
+- name: Create an EC2 private key
+  ec2_key:
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+    aws_region: '{{ aws_region }}'
+    name: '{{ item.key }}'
+    state: '{{ item.state }}'
+  register: ec2_private_key
+- name: Prepare EC2 private key directory
+  file:
+    path: 'hosts/{{ item.domain_alias }}/keys'
+    state: directory
+  when: ec2_private_key.key.private_key is defined
+- name: Save EC2 private key to the disk
+  copy:
+    content: '{{ ec2_private_key.key.private_key }}'
+    dest: 'hosts/{{ item.domain_alias }}/keys/{{ item.key }}.pem'
+    mode: 0600
+  when: ec2_private_key.key.private_key is defined
+- name: Delete EC2 private key from the disk
+  file:
+    path: 'hosts/{{ item.domain_alias }}/keys/{{ item.key }}.pem'
+    state: absent
+  when: item.state == 'absent'

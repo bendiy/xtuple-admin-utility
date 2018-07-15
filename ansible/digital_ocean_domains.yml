@@ -1,0 +1,30 @@
+---
+
+- name: Add domain
+  digital_ocean_domain:
+    api_token: '{{ digital_ocean.token }}'
+    state: present
+    name: '{{ droplet.item.domain_alias }}'
+    ip: '{{ droplet.droplet.ip_address }}'
+  when: droplet.droplet is defined
+- name: Add subdomains
+  digital_ocean_domain:
+    api_token: '{{ digital_ocean.token }}'
+    state: present
+    name: '{{ item }}.{{ droplet.item.domain_alias }}'
+    ip: '{{ droplet.droplet.ip_address }}'
+  with_items: '{{ droplet.item.environments }}'
+  when: droplet.droplet is defined
+- name: Remove domain
+  digital_ocean_domain:
+    api_token: '{{ digital_ocean.token }}'
+    state: absent
+    name: '{{ droplet.item.domain_alias }}'
+  when: droplet.droplet is undefined
+- name: Remove subdomains
+  digital_ocean_domain:
+    api_token: '{{ digital_ocean.token }}'
+    state: absent
+    name: '{{ item }}.{{ droplet.item.domain_alias }}'
+  with_items: '{{ droplet.item.environments }}'
+  when: droplet.droplet is undefined

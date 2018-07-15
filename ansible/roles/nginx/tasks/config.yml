@@ -1,0 +1,18 @@
+---
+# Configuration files
+- name: Backup original {{ item.file }}
+  copy: 
+    src: /etc/nginx/{{ item.file }}
+    dest: /etc/nginx/{{ item.file }}.original
+    remote_src: yes
+    force: no
+- name: Fetch original {{ item.file }}
+  fetch:
+    src: /etc/nginx/{{ item.file }}.original
+    dest: roles/nginx/files/{{ item.file }}
+    flat: yes
+  when: setup_type == 'vagrant'
+- name: Upload custom {{ item.file }}
+  template: 
+    src: '{{ item.file }}.nginx.j2'
+    dest: /etc/nginx/{{ item.file }}

@@ -1,0 +1,11 @@
+---
+
+- name: Terminate EC2 instances
+  ec2:
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+    aws_region: '{{ aws_region }}'
+    instance_ids: '{{ item.instance_id }}'
+    state: absent
+  with_items: '{{ result.instances }}'
+  when: result.instances is defined

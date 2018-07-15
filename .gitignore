@@ -40,3 +40,10 @@ xtuple_plv8
 # stash it, and return the /xtuple line back.
 /var
 !/var/**/.gitkeep
+
+# Ansible
+ansible/hosts
+ansible/inventory/config.json
+ansible/inventory/inventory.json
+ansible/inventory/inventory.yml
+ansible/*.retry

@@ -1,0 +1,27 @@
+---
+# Install and configure Oh-My-ZSH
+- name: Clone robbyrussell/oh-my-zsh
+  git:
+    repo: git://github.com/robbyrussell/oh-my-zsh.git
+    dest: /home/{{ user }}/.oh-my-zsh
+  become: yes
+  become_user: '{{ user }}'
+- name: Create .zshrc
+  copy:
+    src: /home/{{ user }}/.oh-my-zsh/templates/zshrc.zsh-template
+    dest: /home/{{ user }}/.zshrc.original
+    remote_src: yes
+  become: yes
+  become_user: '{{ user }}'
+- name: Configure .zshrc
+  template:
+    src: zshrc.j2
+    dest: /home/{{ user }}/.zshrc
+  vars:
+    - user: '{{ user }}'
+  become: yes
+  become_user: '{{ user }}'
+- name: Change {{ user }} user shell to ZSH
+  user:
+    name: '{{ user }}'
+    shell: /bin/zsh

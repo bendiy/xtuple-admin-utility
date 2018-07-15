@@ -30,12 +30,20 @@ Vagrant.configure('2') do |config|
         vars = setup.reject { |k| k == 'machines' }
         vars = vars.merge(machine['vars']).merge(
           setup_type: 'vagrant',
+          provision_user: 'vagrant',
           deployer_name: 'vagrant',
-          deployer_pass: 'vagrant'
+          deployer_pass: 'vagrant',
+          machine_name: name,
+          domain: configure.vm.hostname
         )
         if machine['provision'].key?('shell')
           configure.vm.provision 'shell' do |shell|
             vagrant_provision_shell(shell, vars, machine['provision']['shell'])
+          end
+        end
+        if machine['provision'].key?('ansible')
+          configure.vm.provision 'ansible' do |ansible|
+            vagrant_provision_ansible(ansible, vars, machine['provision']['ansible'])
           end
         end
       end
@@ -75,4 +83,11 @@ def vagrant_provision_shell(shell, vars, machine)
     vars[:deployer_pass],
     vars[:deployer_name]
   ]
+end
+
+def vagrant_provision_ansible(ansible, vars, config)
+  # ansible.verbose = 'v'
+  ansible.compatibility_mode = '2.0'
+  ansible.playbook = config['playbook']
+  ansible.extra_vars = vars
 end

@@ -1,0 +1,7 @@
+---
+- import_playbook: aws.yml
+  tags: ['aws']
+- import_playbook: provision.yml
+  tags: ['provision']
+- import_playbook: deploy.yml
+  tags: ['deploy']

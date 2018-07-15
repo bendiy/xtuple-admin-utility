@@ -1,0 +1,18 @@
+---
+
+postgres_databases:
+    - user: '{{ deployer_name }}'
+      database: '{{ deployer_name }}'
+      password: '{{ deployer_pass }}'
+    - user: phpunit
+      database: phpunit
+      password: phpunit
+    - user: development
+      database: development
+      password: '{{ development_db_pass }}'
+    - user: stage
+      database: stage
+      password: '{{ stage_db_pass }}'
+    - user: production
+      database: production
+      password: '{{ production_db_pass }}'

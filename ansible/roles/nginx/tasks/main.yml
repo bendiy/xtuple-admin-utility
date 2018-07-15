@@ -1,0 +1,104 @@
+---
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: latest
+
+- name: Fetch default site config
+  fetch:
+    src: /etc/nginx/sites-available/default
+    dest: roles/nginx/files/sites-available/default
+    flat: yes
+    fail_on_missing: no
+  when: setup_type == 'vagrant'
+- name: Disable default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart Nginx
+- name: Remove default site config
+  file:
+    path: /etc/nginx/sites-available/default
+    state: absent
+
+- include_tasks: config.yml
+  with_items:
+    - file: nginx.conf
+    - file: mime.types
+    - file: fastcgi_params
+
+- name: Prepare Nginx configuration directories
+  file:
+    path: /etc/nginx/{{ item }}
+    state: directory
+  with_items:
+    - apps/drupal
+    - conf.d
+- name: Upload Nginx configuration files
+  template:
+    src: '{{ item.src }}.nginx.j2'
+    dest: /etc/nginx/{{ item.src }}.conf
+  with_items:
+    - src: apps/drupal/drupal
+    - src: apps/drupal/fastcgi_drupal
+    - src: apps/drupal/fastcgi_no_args_drupal
+    - src: apps/drupal/map_cache
+    - src: apps/drupal/security
+    - src: conf.d/blacklist
+    - src: conf.d/fastcgi
+    - src: conf.d/map_block_http_methods
+    - src: conf.d/nginx_status_allowed_hosts
+    - src: conf.d/php_fpm_status_allowed_hosts
+    - src: conf.d/ssl
+
+- name: Remove default /var/www/html content
+  file:
+    path: /var/www/html
+    state: absent
+
+- include_tasks: directory.yml
+  name: Recreate sites directories
+  with_items:
+    - /etc/nginx/sites-available
+    - /etc/nginx/sites-enabled
+
+- include_tasks: certbot.yml
+  tags:
+    - certbot
+
+- include_tasks: site.yml
+  with_items:
+    - name: Default site (404)
+      site: default
+      template: default.nginx
+
+- include_tasks: site.yml
+  with_items:
+    - name: xDruple development site
+      site: xdruple
+      template: xdruple.nginx
+  when: setup_type == 'vagrant'
+
+- include_tasks: site.yml
+  with_items:
+    - name: Dev environment configuration
+      site: dev
+      dir: dev
+      template: environment.nginx
+      certbot: yes
+    - name: Stage environment configuration
+      site: stage
+      dir: stage
+      template: environment.nginx
+      certbot: yes
+    - name: Live environment configuration
+      site: live
+      dir: live
+      template: environment.nginx
+      certbot: yes
+  when: domain_alias is defined
+
+- include_tasks: htpasswd.yml
+  when: setup_type == 'server' and http_auth_name is defined and http_auth_pass is defined
+

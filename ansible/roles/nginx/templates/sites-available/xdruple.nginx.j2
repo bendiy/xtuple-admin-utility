@@ -1,0 +1,16 @@
+# -*- mode: nginx; mode: flyspell-prog;  ispell-current-dictionary: american -*-
+
+server {
+    listen 80;
+
+    server_name *.xd;
+    root /opt/xtuple/commerce/$host/drupal/core;
+
+    error_log /var/log/nginx/xdruple/error.log;
+    access_log /var/log/nginx/xdruple/access.log;
+
+    index index.php;
+
+    include apps/drupal/security.conf;
+    include apps/drupal/drupal.conf;
+}

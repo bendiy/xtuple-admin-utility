@@ -1,0 +1,76 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    ec2_security_groups:
+      - name: web-public
+        description: Public website
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 443
+            to_port: 443
+            cidr_ip: 0.0.0.0/0
+    aws_access_key: '{{ aws.access_key }}'
+    aws_secret_key: '{{ aws.secret_key }}'
+    aws_region: '{{ aws.region }}'
+
+  tasks:
+    - include_tasks: aws-key.yml
+      with_items: '{{ xtuple.hosts }}'
+    - include_tasks: aws-sg.yml
+      with_items: '{{ ec2_security_groups }}'
+    - name: Launch EC2 instance
+      ec2:
+        aws_access_key: '{{ aws_access_key }}'
+        aws_secret_key: '{{ aws_secret_key }}'
+        aws_region: '{{ aws_region }}'
+        id: '{{ item.domain_alias }}'
+        key_name: '{{ item.key }}'
+        image: "{{ item.image | default('ami-66506c1c') }}"
+        instance_type: "{{ item.type | default('t2.micro') }}"
+        instance_tags:
+          Name: '{{ item.domain_alias }}'
+        count: 1
+        state: '{{ item.state }}'
+        group: '{{ item.group }}'
+        wait: yes
+      register: ec2
+      when: item.state == 'present'
+      with_items: '{{ xtuple.hosts }}'
+    - include_tasks: aws-domains.yml
+      with_items: '{{ ec2.results }}'
+      loop_control:
+        loop_var: result
+        label: '{{ result.item.domain_alias }}'
+    - include_tasks: aws-inventory.yml
+      with_items: '{{ ec2.results }}'
+      loop_control:
+        loop_var: result
+        label: '{{ result.item.domain_alias }}'
+    - name: Find instances to terminate
+      ec2_instance_facts:
+        aws_access_key: '{{ aws_access_key }}'
+        aws_secret_key: '{{ aws_secret_key }}'
+        aws_region: '{{ aws_region }}'
+        filters:
+          'client-token': '{{ item.domain_alias }}'
+      when: item.state == 'absent'
+      register: ec2_remove_instances
+      with_items: '{{ xtuple.hosts }}'
+    - include_tasks: aws-terminate.yml
+      with_items: '{{ ec2_remove_instances.results }}'
+      loop_control:
+        loop_var: result
+        label: '{{ result.item.domain_alias }}'
+      when: ec2_remove_instances.results is defined

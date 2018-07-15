@@ -1,0 +1,14 @@
+---
+
+ruby_apt_packages:
+  - rubygems
+  - rubygems-integration
+  - ruby-dev
+
+ruby_gems:
+  - name: Compass
+    gem: compass
+  - name: ASCIIDoctor
+    gem: asciidoctor
+  - name: CodeRay (for ASCIIDoctor)
+    gem: coderay

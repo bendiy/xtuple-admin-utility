@@ -1,0 +1,32 @@
+---
+# Vagrant-specific provision tasks.
+- name: Create xTuple ERP private keys directory
+  file:
+    path: /var/xtuple
+    state: directory
+    mode: 0755
+
+- block:
+  - name: Check for /vagrant/xtuple/keys existense
+    stat:
+      path: /var/xtuple/keys
+    register: vagrant_xtuple_keys_dir
+  - name: Symlink Vagrant keys directory
+    file:
+      src: /vagrant/xtuple/keys
+      dest: /var/xtuple/keys
+      state: link
+    when: not vagrant_xtuple_keys_dir.stat.exists
+  - name: Match host username for shared directories
+    stat:
+      path: /opt/xtuple/commerce
+    register: dir
+    when:
+  - name: Adjust shared directories owner
+    user:
+      name: '{{ host.username }}'
+      createhome: no
+      uid: '{{ dir.stat.uid }}'
+      group: '{{ dir.stat.gr_name }}'
+    when: dir.stat.gr_name is defined
+  when: setup_type == 'vagrant'

@@ -1,0 +1,32 @@
+{
+  "customers": {
+    "xtuple": {
+      "servers": {
+        "flywheel.net": {
+          "state": "absent",
+          "vars": {
+            "name": "flywheel",
+            "setup_type": "server",
+            "timezone": "America/New_York",
+            "root_pass": "root",
+            "provision_user": "root",
+            "deployer_name": "deployer",
+            "deployer_pass": "deployer",
+            "domain": "flywheel.net",
+            "zone": "xtuplecloud.com",
+            "key": "flywheel_xtuplecloud_com",
+            "group": "web-public",
+            "domain_alias": "flywheel.xtuplecloud.com",
+            "environments": ["dev", "stage", "live"],
+            "http_auth_name": "xtuple",
+            "http_auth_pass": "flywheel",
+            "development_db_pass": "development",
+            "stage_db_pass": "stage",
+            "production_db_pass": "production",
+            "deploy": "flywheel.2018-02-28.tgz"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+---
+# PHP role Vagrant setup variables
+php_ini:
+  max_execution_time: 600
+  memory_limit: 256M
+  max_input_vars: 100000
+  pcre:
+    backtrack_limit: 10000000
+
+# xDebug.ini
+php_xdebug_profiler_output_dir: /vagrant/output/xdebug
+php_xdebug_profiler_output_name: vagrant.out.%t.xdebug

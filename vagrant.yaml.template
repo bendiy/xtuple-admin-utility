@@ -23,6 +23,8 @@ machines:
     provision:
       shell:
         path: src/vagrant.sh
+      ansible:
+        playbook: ansible/provision.yml
     folders:
       - host: './'
         guest: '/vagrant'

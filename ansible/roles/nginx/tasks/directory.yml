@@ -1,0 +1,10 @@
+---
+
+- name: Remove {{ item }}
+  file:
+    path: '{{ item }}'
+    state: absent
+- name: Create {{ item }}
+  file:
+    path: '{{ item }}'
+    state: directory

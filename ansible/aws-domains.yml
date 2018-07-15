@@ -1,0 +1,73 @@
+---
+
+- name: Add domain record
+  route53:
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+    state: present
+    zone: '{{ result.item.zone }}'
+    record: '{{ result.item.domain_alias }}'
+    type: A
+    ttl: 300
+    value:
+      - '{{ result.instances[0].public_ip }}'
+    wait: yes
+  when: result.item.state == 'present'
+- name: Add sub-domain records
+  route53:
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+    state: present
+    zone: '{{ result.item.zone }}'
+    record: '{{ item }}.{{ result.item.domain_alias }}'
+    type: A
+    ttl: 300
+    value:
+      - '{{ result.instances[0].public_ip }}'
+    wait: yes
+  with_items: '{{ result.item.environments }}'
+  when: result.item.state == 'present'
+- name: Retrieve domain record info to remove it
+  route53:
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+    state: get
+    zone: '{{ result.item.zone }}'
+    record: '{{ result.item.domain_alias }}'
+    type: A
+  register: record
+  when: result.item.state == 'absent'
+- name: Remove domain record
+  route53:
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+    state: absent
+    zone: '{{ record.set.zone }}'
+    record: '{{ record.set.record }}'
+    ttl: "{{ record.set.ttl }}"
+    type: "{{ record.set.type }}"
+    value: "{{ record.set.value }}"
+  when: result.item.state == 'absent' and record.set.record is defined
+- name: Retrieve sub-domain record info to remove it
+  route53:
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+    state: get
+    zone: '{{ result.item.zone }}'
+    record: '{{ item }}.{{ result.item.domain_alias }}'
+    type: A
+  register: records
+  with_items: '{{ result.item.environments }}'
+  when: result.item.state == 'absent'
+- name: Remove sub-domain record
+  route53:
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+    state: absent
+    zone: '{{ item.set.zone }}'
+    record: '{{ item.set.record }}'
+    ttl: "{{ item.set.ttl }}"
+    type: "{{ item.set.type }}"
+    value: "{{ item.set.value }}"
+  with_items: '{{ records.results }}'
+  when: item.set is defined and item.set.zone is defined

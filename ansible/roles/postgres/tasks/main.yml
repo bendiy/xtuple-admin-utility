@@ -1,0 +1,43 @@
+---
+
+- name: Include setup-specific variables
+  include_vars: '{{ setup_type }}.yml'
+
+- name: Add Postgres 9.6 repository
+  apt_repository:
+    repo: deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main
+- name: Add Postgres apt key
+  apt_key:
+    id: ACCC4CF8
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+- name: Install Postgres 9.6
+  apt:
+    name: postgresql-9.6
+    update_cache: yes
+    state: latest
+
+- name: Install Python psycopg2 library
+  pip:
+    name: psycopg2
+
+- name: Backup original pg_hba.conf
+  copy:
+    src: /etc/postgresql/9.6/main/pg_hba.conf
+    dest: /etc/postgresql/9.6/main/pg_hba.conf.original
+    remote_src: yes
+    force: no
+- name: Fetch original pg_hba.conf
+  fetch:
+    src: /etc/postgresql/9.6/main/pg_hba.conf.original
+    dest: roles/postgres/files/main/pg_hba.conf
+    flat: yes
+  when: setup_type == 'vagrant'
+- name: Upload custom pg_hba.conf
+  template: 
+    src: main/{{ setup_type }}.pg_hba.conf.j2
+    dest: /etc/postgresql/9.6/main/pg_hba.conf
+  notify: Restart Postgres
+
+- name: Create DB users and databases
+  include_tasks: database.yml
+  with_items: '{{ postgres_databases }}'

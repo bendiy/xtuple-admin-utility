@@ -1,0 +1,45 @@
+---
+
+- name: Setup {{ item.name }}
+  template:
+    src: sites-available/{{ item.template }}.j2
+    dest: /etc/nginx/sites-available/{{ item.site }}.conf
+  vars:
+    site: '{{ item.site }}'
+- name: Enable {{ item.name }}
+  file:
+    src: /etc/nginx/sites-available/{{ item.site }}.conf
+    dest: /etc/nginx/sites-enabled/{{ item.site }}.conf
+    state: link
+  notify: Restart Nginx
+- name: Create /var/log/nginx/{{ item.site }} directory
+  file:
+    path: /var/log/nginx/{{ item.site }}
+    state: directory
+- name: Create /opt/xtuple/commerce/{{ item.dir }} directory
+  file:
+    path: /opt/xtuple/commerce/{{ item.dir }}
+    state: directory
+    owner: '{{ deployer_name }}'
+    group: '{{ deployer_name }}'
+    recurse: yes
+  when: setup_type == 'server' and item.dir is defined
+- name: Check /opt/xtuple/commerce/{{ item.dir }}/web directory
+  stat:
+    path: /opt/xtuple/commerce/{{ item.dir }}/web
+  register: dir
+  when: setup_type == 'server' and item.dir is defined
+- name: Ensure permissions of /opt/xtuple/commerce/{{ item.dir }}/web directory
+  file:
+    path: /opt/xtuple/commerce/{{ item.dir }}/web
+    state: directory
+    owner: www-data
+    group: www-data
+    recurse: yes
+  when: setup_type == 'server' and item.dir is defined and dir.stat.exists
+- name: Obtain certificate
+  command: 'certbot --nginx -n --register-unsafely-without-email --agree-tos -d {{ item.site }}.{{ domain_alias }}'
+  when: item.certbot is defined and certbot_mail is undefined
+- name: Obtain certificate
+  command: 'certbot --nginx -n -m={{ certbot_mail }} --agree-tos -d {{ item.site }}.{{ domain_alias }}'
+  when: item.certbot is defined and certbot_mail is defined

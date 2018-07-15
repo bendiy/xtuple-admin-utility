@@ -1,0 +1,15 @@
+export ZSH=/home/{{ user }}/.oh-my-zsh
+
+ZSH_THEME="{{ oh_my_zsh_theme }}"
+
+CASE_SENSITIVE="true"
+DISABLE_UPDATE_PROMPT="true"
+
+plugins=({{ oh_my_zsh_plugins | join(' ') }})
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+export PATH="/home/{{ user }}/.composer/vendor/bin":$PATH
+
+export COMPOSER_DISABLE_XDEBUG_WARN=1
+
+source $ZSH/oh-my-zsh.sh

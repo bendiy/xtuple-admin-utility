@@ -1,0 +1,30 @@
+# -*- mode: nginx; mode: flyspell-prog;  ispell-current-dictionary: american -*-
+
+## HTTP server.
+server {
+    listen 80;
+    server_name {{ site }}.{{ domain_alias }};
+    rewrite ^ https://$host$request_uri permanent;
+}
+
+server {
+    listen 443 ssl;
+    server_name {{ site }}.{{ domain_alias }};
+    limit_conn arbeit 32;
+
+    root /opt/xtuple/commerce/{{ site }}/drupal/core;
+
+    access_log /var/log/nginx/{{ site }}/access.log;
+    error_log /var/log/nginx/{{ site }}/error.log;
+
+    auth_basic "Restricted";
+    auth_basic_user_file /opt/xtuple/commerce/.htpasswd;
+
+    ## Strict Transport Security header for enhanced security. See
+    ## http://www.chromium.org/sts.
+    add_header Strict-Transport-Security "max-age=7200";
+
+    include /etc/nginx/conf.d/ssl.conf;
+    include apps/drupal/security.conf;
+    include apps/drupal/drupal.conf;
+} # HTTP server

@@ -1,0 +1,7 @@
+---
+
+- name: Install {{ item.name }}
+  gem:
+    name: '{{ item.gem }}'
+    state: latest
+    user_install: no

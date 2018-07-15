@@ -1,0 +1,62 @@
+---
+
+php_packages:
+  - php-common
+  - php7.1-common
+  - php7.1-json
+  - php7.1-opcache
+  - php7.1-readline
+  - php7.1-fpm
+  - php7.1
+  - php7.1-xml
+  - php7.1-dev
+  - php7.1-gd
+  - php7.1-pgsql
+  - php7.1-curl
+  - php7.1-intl
+  - php7.1-mcrypt
+  - php7.1-mbstring
+  - php7.1-soap
+  - php7.1-zip
+
+php_phars:
+  - name: Composer
+    bin: composer
+    version: 1.6.3
+    url: https://getcomposer.org/download/1.6.3/composer.phar
+    checksum: sha256:52cb7bbbaee720471e3b34c8ae6db53a38f0b759c06078a80080db739e4dcab6
+  - name: Phing
+    bin: phing
+    version: 2.16.1
+    url: http://www.phing.info/get/phing-2.16.1.phar
+    checksum: sha512:fc3ec05b6540642f4aa33e219d08b9c850eb0dc3921acf171b5055e07e62d06d934d6cd32e7b5bdfdd6a13a53acd600eaa36f8f19a37bb835919e339abd103af
+  - name: PHPUnit
+    bin: phpunit
+    version: 7.0.2
+    url: https://phar.phpunit.de/phpunit-7.1.2.phar
+    checksum: sha256:54d28e405f94b583708f0c677fc52db0bfdf8de16ededc468e1a2b7a46e103e0
+
+php_pears:
+  - name: PHP_CodeSniffer
+  - name: VersionControl_Git-0.5.0
+
+php_composer:
+  - name: PHP Mess Detector
+    package: phpmd/phpmd
+    bin: phpmd
+  - name: PDepend
+    package: pdepend/pdepend
+    bin: pdepend
+  - name: Couscous
+    package: couscous/couscous
+    bin: couscous
+  - name: APIGen
+    package: apigen/apigen
+    bin: apigen
+
+php_ini:
+  max_execution_time: 60
+  memory_limit: 256M
+  max_input_vars: 100000
+  pcre:
+    backtrack_limit: 10000000

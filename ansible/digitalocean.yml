@@ -1,0 +1,65 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - name: Add public key to Digital Ocean
+      digital_ocean_sshkey:
+        oauth_token: '{{ digital_ocean.token }}'
+        name: "{{ digital_ocean.public_key.name|default('id_rsa.pub') }}"
+        ssh_pub_key: "{{ lookup('file', '{{ digital_ocean.public_key.path }}') }}"
+      register: digital_ocean_response
+    - name: Create Digital Ocean droplet
+      digital_ocean:
+        api_token: '{{ digital_ocean.token }}'
+        command: droplet
+        state: "{{ item.state|default('present') }}"
+        name: '{{ item.domain_alias }}'
+        size_id: 2gb
+        region_id: nyc3
+        image_id: ubuntu-16-04-x64
+        ssh_key_ids:
+          - '{{ digital_ocean_response.data.ssh_key.id }}'
+        backups_enabled: yes
+        unique_name: yes
+        wait_timeout: 600
+      register: created
+      with_items: '{{ droplets }}'
+    - name: Add hosts to inventory
+      add_host:
+        name: '{{ item.item.domain_alias }}'
+        groups:
+          - digital_ocean
+          - xdruple
+          - deploy
+          - '{{ item.item.name }}'
+        ansible_host_name: '{{ item.item.domain_alias }}'
+        ansible_host: '{{ item.item.domain_alias }}'
+        ansible_ssh_host: '{{ item.item.domain_alias }}'
+      when: item.droplet is defined
+      with_items: '{{ created.results }}'
+    - include_tasks: digital_ocean_domains.yml
+      with_items: '{{ created.results }}'
+      loop_control:
+        loop_var: droplet
+
+- hosts: digital_ocean
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+    - name: Write the new  host key to known_hosts
+      connection: local
+      shell: 'ssh-keyscan -H {{ ansible_ssh_host }} >> ~/.ssh/known_hosts'
+      vars:
+        ansible_python_interpreter: '/usr/bin/python'
+    - name: Wait up to 5 minutes for port 22 to become open
+      connection: local
+      wait_for:
+        port: 22
+        host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
+        delay: 10
+        timeout: 300
+      vars:
+        ansible_python_interpreter: '/usr/bin/python'
