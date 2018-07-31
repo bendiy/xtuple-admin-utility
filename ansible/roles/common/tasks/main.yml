@@ -1,13 +1,5 @@
 ---
 # Common tasks for all installations.
-- name: Set timezone to {{ timezone }}
-  timezone:
-    name: '{{ timezone }}'
-  notify:
-  - Restart Cron
-- name: Set locale to {{ locale }}
-  locale_gen:
-    name: '{{ locale }}'
 - name: Add git-core/ppa repository
   apt_repository:
     repo: 'ppa:git-core/ppa'

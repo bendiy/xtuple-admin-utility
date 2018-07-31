@@ -1,0 +1,26 @@
+---
+
+- name: Generate a private key
+  shell: 'openssl genrsa -des3 -out {{ xtau_erp_private_path }}/server.key -passout pass:xtuple 4096'
+  args:
+    creates: '{{ xtau_erp_private_path }}/server.key'
+
+- name: Generate a public key
+  shell: "openssl rsa -in {{ xtau_erp_private_path }}/server.key -passin pass:xtuple -out {{ xtau_erp_private_path }}/server.pem -passout pass:xtuple"
+  args:
+    creates: '{{ xtau_erp_private_path }}/server.pem'
+
+- name: Generate a certificate request
+  shell: "openssl req -batch -new -key {{ xtau_erp_private_path }}/server.pem -out {{ xtau_erp_private_path }}/server.csr -subj '/CN='{{ ansible_hostname }}"
+  args:
+    creates: '{{ xtau_erp_private_path }}/server.csr'
+
+- name: Generate a self-signed SSL certificate
+  shell: "openssl x509 -req -days 365 -in {{ xtau_erp_private_path }}/server.csr -signkey {{ xtau_erp_private_path }}/server.pem -out {{ xtau_erp_private_path }}/server.crt"
+  args:
+    creates: '{{ xtau_erp_private_path }}/server.crt'
+
+- name: Allow to read server.pem
+  file:
+    dest: '{{ xtau_erp_private_path }}/server.pem'
+    mode: u=rw,g=r,o=r

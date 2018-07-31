@@ -1,14 +1,17 @@
 ---
 
-- name: Add Postgres user {{ item.user }}
+- name: Add Postgres user {{ database.user }}
   become: true
   become_user: postgres
   postgresql_user:
-    name: '{{ item.user }}'
-    password: '{{ item.password }}'
-- name: Add Postgres database {{ item.database }} (owner {{ item.user }})
+    name: '{{ database.user }}'
+    password: '{{ database.password }}'
+    port: '{{ item.port }}'
+
+- name: Add Postgres database {{ database.name }} (owner {{ database.user }})
   become: true
   become_user: postgres
   postgresql_db:
-    name: '{{ item.database }}'
-    owner: '{{ item.user }}'
+    name: '{{ database.name }}'
+    owner: '{{ database.user }}'
+    port: '{{ item.port }}'

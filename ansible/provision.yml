@@ -23,6 +23,8 @@
         autoremove: yes
 
   roles:
+    - role: locale
+      tags: locale
     - role: common
       tags: common
     - role: deployment
@@ -33,6 +35,8 @@
       tags: php
     - role: postgres
       tags: postgres
+    - role: erp
+      tags: erp
     - role: postfix
       tags: postfix
     - role: ruby

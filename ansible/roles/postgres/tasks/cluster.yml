@@ -1,0 +1,81 @@
+---
+# Cluster provisioning
+
+- name: Check database cluster existense
+  shell: pg_lsclusters -h | grep "^{{ item.version }} {{ item.name }} {{ item.port }}"
+  args:
+    executable: /bin/bash
+  register: clusters
+  failed_when: clusters.rc == 2
+  changed_when: false
+
+- name: Creating database cluster {{ item.name }} using version {{ item.version }} on port {{ item.port }} encoded with {{ item.locale }}
+  shell: pg_createcluster --locale {{ item.locale }} -p {{ item.port }} --start --start-conf={{ item.start_conf }} {{ item.version }} {{ item.name }} -o listen_addresses='*' -o log_line_prefix='%t %d %u ' -- --auth=trust --auth-host=trust --auth-local=trust
+  args:
+    executable: /bin/bash
+  when: clusters.stdout == ''
+
+- name: Backup original {{ item.version }}/{{ item.name }}/pg_hba.conf
+  copy:
+    src: /etc/postgresql/{{ item.version }}/{{ item.name }}/pg_hba.conf
+    dest: /etc/postgresql/{{ item.version }}/{{ item.name }}/pg_hba.conf.original
+    remote_src: yes
+    force: no
+- name: Fetch original {{ item.version }}/{{ item.name }}/pg_hba.conf
+  fetch:
+    src: /etc/postgresql/{{ item.version }}/{{ item.name }}/pg_hba.conf.original
+    dest: roles/postgres/files/cluster/pg_hba.conf
+    flat: yes
+  when: setup_type == 'vagrant'
+- name: Upload custom {{ item.version }}/{{ item.name }}/pg_hba.conf
+  template:
+    src: cluster/{{ setup_type }}.pg_hba.conf.j2
+    dest: /etc/postgresql/{{ item.version }}/{{ item.name }}/pg_hba.conf
+  notify: Restart Postgres
+
+- name: Backup original {{ item.version }}/{{ item.name }}/postgresql.conf
+  copy:
+    src: /etc/postgresql/{{ item.version }}/{{ item.name }}/postgresql.conf
+    dest: /etc/postgresql/{{ item.version }}/{{ item.name }}/postgresql.conf.original
+    remote_src: yes
+    force: no
+- name: Fetch original {{ item.version }}/{{ item.name }}/postgresql.conf
+  fetch:
+    src: /etc/postgresql/{{ item.version }}/{{ item.name }}/postgresql.conf.original
+    dest: roles/postgres/files/cluster/postgresql.conf
+    flat: yes
+  when: setup_type == 'vagrant'
+- name: Upload custom {{ item.version }}/{{ item.name }}/postgresql.conf
+  template:
+    src: cluster/postgresql.conf.j2
+    dest: /etc/postgresql/{{ item.version }}/{{ item.name }}/postgresql.conf
+  notify: Restart Postgres
+
+- name: Ensure cluster {{ item.version }}-{{ item.name }} is started on boot
+  service:
+    name: postgresql@{{ item.version }}-{{ item.name }}
+    state: restarted
+    enabled: yes
+
+- name: Add Postgres user xtrole (required for xTuple bootstrap)
+  become: true
+  become_user: postgres
+  postgresql_user:
+    name: xtrole
+    role_attr_flags: NOLOGIN
+    port: '{{ item.port }}'
+
+# Using shell, as postgresql_user does not support "IN ROLE"
+- name: Add Postgres user admin (required for xTuple bootstrap)
+  become: true
+  become_user: postgres
+  shell: psql -q -d postgres -p {{ item.port }} -c "CREATE ROLE admin WITH PASSWORD 'admin' SUPERUSER CREATEDB CREATEROLE LOGIN IN ROLE xtrole;"
+  register: psql
+  failed_when: psql.rc == 1 and 'role "admin" already exists' not in psql.stderr
+  changed_when: psql.rc == 0
+
+- name: Create DB users and databases
+  include_tasks: database.yml
+  with_items: '{{ item.databases }}'
+  loop_control:
+    loop_var: database

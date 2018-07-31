@@ -1,0 +1,13 @@
+---
+
+- name: Copy xtuple systemd template
+  template:
+    src: xtuple-systemd.service
+    dest: /etc/systemd/system/xtuple-erp.service
+
+- name: Start xtuple-erp service
+  service:
+    name: xtuple-erp
+    enabled: yes
+    daemon_reload: yes
+    state: started

@@ -36,6 +36,114 @@ For server provisioning only:
 provide correct domains and passwords.
 * Run `ansible-playbook ansible/provision.yml -i ansible/inventory/inventory.yml --ask-become-pass`
 
+== Vagrant setup
+
+=== Assumptions
+
+* xTupleCommerce projects code is located in `~/Code/Drupal7` directory on the host machine.
+* xTuple PHP utility code is located in `~/Code/PHP` directory on the host machine.
+* Each xTupleCommerce directory name ends with `.xd`, e.g. `example.xd`.
+
+=== Installation
+
+* Update your operating system and packages:
+** _(MacOSX)_ if you use `link:https://brew.sh[brew]`,
+make sure `brew doctor` returns `Your system is ready to brew.`
+and `brew update` returns `Already up-to-date.`;
+** _(Ubuntu Linux)_ run `sudo apt-get update && sudo apt-get upgrade`
+** run `gem update`.
+* Download and install the latest
+https://www.virtualbox.org/wiki/Downloads[VirtualBox].
+* Download and install the latest
+http://downloads.vagrantup.com[Vagrant].
+* Install https://www.ansible.com[Ansible].
+Follow their
+http://docs.ansible.com/ansible/latest/intro_installation.html[installation documentation].
+* Install `link:https://github.com/dotless-de/vagrant-vbguest[dotless-de/vagrant-vbguest]` plugin:
+run `vagrant plugin install vagrant-vbguest`.
+* Install `link:https://github.com/dustymabe/vagrant-sshfs[dustymabe/vagrant-sshfs]` plugin:
+run `vagrant plugin install vagrant-sshfs`.
+* _(MacOSX)_
+Install `link:https://github.com/BerlinVagrant/vagrant-dns[BerlinVagrant/vagrant-dns]` plugin:
+run `vagrant plugin install vagrant-dns`.
+* Clone https://github.com/amikheychik/xtuple-admin-utility[xTuple Admin Utility] repository:
+run
+[source,bash]
+----
+mkdir -p ~/Vagrant \
+&& git clone git@github.com:amikheychik/xtuple-admin-utility.git ~/Vagrant/xtau \
+&& cd $_
+----
+* Copy `config.yaml.dist` as `config.yaml`:
+`cp config.yaml.dist config.yaml`.
+* Edit `config.yaml` with your local data:
+** ensure the IP address for virtual machine is not used (`192.168.33.xyz` pattern is recommended).
+** setup your local https://en.wikipedia.org/wiki/List_of_tz_database_time_zones[timezone].
+** setup the synced folders.
+** ensure you have the right host machine OS set.
+** setup your https://help.github.com/articles/creating-an-access-token-for-command-line-use[Github token].
+** setup your host machine username
+(run `whoami` in your terminal).
+* Run `vagrant up` to start your virtual machine.
+* Run `vagrant reload --provision` to reboot virtual machine/
+* _(MacOSX)_ Run `vagrant dns --install` to activate `vagrant-dns` plugin (user password will be asked).
+
+=== Directories
+
+* `~/Code/Drupal7` on the host machine
+would be available as `/opt/xtuple/commerce` on the virtual machine.
+* `~/Vagrant/xtau` directory on the host machine
+would be available as `/vagrant` on the virtual machine.
+* `~/Vagrant/xtau/xtuple` directory is available as `/var/xtuple`,
+and it's primary purpose to store `.p12` keys
+retrieved from xTuple's mobile client and used for oAuth connection.
+* `~/Vagrant/xtau/output` directory's purpose is to store output from the server:
+** `~/Vagrant/xtau/output/xdebug` contains profiling files from xdebug
+(when profiling launched).
+
+=== xTupleCommerce project installation
+
+Once the virtual machine is up and running,
+you can proceed with installation of your xTupleCommerce project(s).
+Each project has a standard set of steps,
+yet, it's recommended to always use the `README.adoc` file in the project itself,
+in case there were any customizations.
+
+It's recommended to start with the default https://github.com/xtuple/flywheel[Flywheel] project.
+
+=== Host machine software
+
+* MacOSX `10.13.2`
+* VirtualBox `5.2.14`
+* Vagrant `2.1.2`
+
+=== Virtual machine software
+
+* Ubuntu `16.04`
+* Nginx `1.10`
+* PHP `7.1`
+* xDebug `2.5`
+* PostgresQL `9.6`
+* PHPUnit `7.0`
+
+=== Know issues
+
+* *"Bundler, the underlying system Vagrant uses to install plugins, reported an error."*
++
+To resolve the issue download the latest Vagrant image,
+use uninstall tool it's delivered with,
+then install Vagrant again.
+It should clean-up libraries/dependencies and resolve the issue.
+* *SSH private key not working*
++
+It's recommended to use git only on the host machine,
+as it's usually fully set up there.
+Yet, if you use git on the virtual machine,
+there might be a problem with access to private repos.
+The SSH keys are forwarded from host machine to virtual machine by Vagrant,
+but if they are not in the keychain (for MacOS) they won't work automatically.
+So make sure to run `ssh-add -K ~/.ssh/id_rsa` to add your private key to the keychain.
+
 == xTupleCommerce project setup
 
 Once the virtual machine is up and running,

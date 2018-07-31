@@ -1,0 +1,89 @@
+---
+
+xtau_erp_packages:
+  common:
+    - build-essential
+    - bzip2
+    - cups
+    - curl
+    - dialog
+    - git
+    - jq
+    - libauthen-pam-perl
+    - libavahi-compat-libdnssd-dev
+    - libc++1
+    - libio-pty-perl
+    - libnet-ssleay-perl
+    - libpam-runtime
+    - libssl-dev
+    - openssl
+    - ntp
+    - perl
+    - python
+    - python-magic
+    - python-software-properties
+    - s3cmd
+    - unzip
+    - wget
+    - whiptail
+    - xsltproc
+    - xvfb
+  development:
+    - bison
+    - flex
+    - gperf
+    - libasound2-dev
+    - libbz2-dev
+    - libcap-dev
+    - libcups2-dev
+    - libdrm-dev
+    - libfontconfig1-dev
+    - libgcrypt11-dev
+    - libglu1-mesa-dev
+    - libgstreamer-plugins-base0.10-dev
+    - libgstreamer0.10-dev
+    - libicu-dev
+    - libkrb5-dev
+    - libldap2-dev
+    - libmysqlclient-dev
+    - libnss3-dev
+    - libpam0g-dev
+    - libpci-dev
+    - libperl-dev
+    - libpq-dev
+    - libpulse-dev
+    - libreadline6-dev
+    - libsqlite0-dev
+    - libssl-dev
+    - libudev-dev
+    - libx11-xcb-dev
+    - libxcb*
+    - libxcomposite-dev
+    - libxcursor-dev
+    - libxdamage-dev
+    - libxi-dev
+    - libxml2-dev
+    - libxrandr-dev
+    - libxrender-dev
+    - libxslt1-dev
+    - libxtst-dev
+    - readline-common
+    - ruby
+    - unixodbc-dev
+    - xorg
+    - zlib1g-dev
+
+xtau_erp_node_js:
+  version: 0.10.48
+  sha256: 82f5fe186349ca69d8889d1079dbb86ae77ce54fce5282b806c359ce360cec7b
+
+xtau_erp_npm:
+  version: 2.15.12
+
+xtau_erp_database:
+  name: erp
+
+xtau_erp_configuration_path: /etc/xtuple/{{ xtau_erp_database.name }}
+xtau_erp_private_path: '{{ xtau_erp_configuration_path }}/private'
+
+xtau_erp_node_path: /opt/xtuple/node

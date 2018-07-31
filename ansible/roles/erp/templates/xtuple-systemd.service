@@ -1,0 +1,19 @@
+[Unit]
+Description=xTuple ERP NodeJS Server
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Restart=always
+StartLimitIntervalSec=60
+StartLimitBurst=60
+StandardOutput=syslog
+StandardError=syslog
+User={{ deployer_name }}
+Group={{ deployer_name }}
+Environment=NODE_ENV=production
+ExecStop=/bin/kill -9 $MAINPID
+SyslogIdentifier={{ ansible_env.SYSLOGID | default('') }}
+ExecStart=/usr/bin/env node {{ xtau_erp_node_path }}/xtuple/node-datasource/main.js -c {{ xtau_erp_configuration_path }}/config.js

@@ -47,3 +47,6 @@ ansible/inventory/config.json
 ansible/inventory/inventory.json
 ansible/inventory/inventory.yml
 ansible/*.retry
+
+# Builds
+target

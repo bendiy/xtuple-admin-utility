@@ -80,6 +80,19 @@
       template: xdruple.nginx
   when: setup_type == 'vagrant'
 
+- include_tasks: erp.yml
+  with_items:
+    - name: ERP mobile client
+      template: erp.nginx
+      site: erp
+      host: mobile
+      domain: erp
+      port: 8443
+      ssl: /etc/xtuple/ssl
+      key: ssl.key
+      certificate: ssl.crt
+  when: setup_type == 'vagrant'
+
 - include_tasks: site.yml
   with_items:
     - name: Dev environment configuration

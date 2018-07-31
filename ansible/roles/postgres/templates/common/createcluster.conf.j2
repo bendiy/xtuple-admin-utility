@@ -1,0 +1,11 @@
+create_main_cluster = false
+#start_conf = 'auto'
+#data_directory = '/var/lib/postgresql/%v/%c'
+#waldir = '/var/lib/postgresql/wal/%v/%c/pg_wal'
+#initdb_options = ''
+ssl = on
+cluster_name = '%v/%c'
+stats_temp_directory = '/var/run/postgresql/%v-%c.pg_stat_tmp'
+log_line_prefix = '%%m [%%p] %%q%%u@%%d '
+add_include_dir = 'conf.d'
+include_dir '/etc/postgresql-common/createcluster.d'

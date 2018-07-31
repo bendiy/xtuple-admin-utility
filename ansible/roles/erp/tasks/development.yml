@@ -1,0 +1,8 @@
+---
+# Development environment setup tasks
+
+- name: Install development environment packages
+  apt:
+    name: '{{ item }}'
+    state: latest
+  with_items: '{{ xtau_erp_packages.development }}'
