@@ -1,5 +1,5 @@
 ---
-- import_playbook: aws.yml
+- import_playbook: aws/aws.yml
   tags: ['aws']
 - import_playbook: provision.yml
   tags: ['provision']
