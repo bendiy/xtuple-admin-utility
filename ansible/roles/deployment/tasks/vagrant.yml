@@ -7,14 +7,14 @@
     mode: 0755
 
 - block:
-  - name: Check for /vagrant/xtuple/keys existense
+  - name: Check if /var/xtuple/keys exists
     stat:
       path: /var/xtuple/keys
     register: vagrant_xtuple_keys_dir
   - name: Symlink Vagrant keys directory
     file:
-      src: /vagrant/xtuple/keys
-      dest: /var/xtuple/keys
+      src: /vagrant/var/keys
+      path: /var/xtuple/keys
       state: link
     when: not vagrant_xtuple_keys_dir.stat.exists
   - name: Match host username for shared directories

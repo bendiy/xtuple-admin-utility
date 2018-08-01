@@ -8,5 +8,5 @@ php_ini:
     backtrack_limit: 10000000
 
 # xDebug.ini
-php_xdebug_profiler_output_dir: /vagrant/output/xdebug
+php_xdebug_profiler_output_dir: /vagrant/var/xdebug
 php_xdebug_profiler_output_name: vagrant.out.%t.xdebug

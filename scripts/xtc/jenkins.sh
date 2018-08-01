@@ -74,7 +74,7 @@ xdebug.max_nesting_level = 250
 xdebug.remote_connect_back = 1
 xdebug.remote_enable = 1
 xdebug.profiler_enable_trigger = 1
-xdebug.profiler_output_dir = /vagrant/output/xdebug
+xdebug.profiler_output_dir = /vagrant/var/xdebug
 xdebug.profiler_output_name = vagrant.out.%t.xdebug
 EOF"
 
