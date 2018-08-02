@@ -5,11 +5,12 @@
 :source-highlighter: coderay
 :source-language: bash
 
-== Server provisioning with Ansible
+== Provisioning with Ansible
 
-Ansible is used for Vagrant and server provisioning.
+https://www.ansible.com[Ansible] is a configuration management tool
+that is used provisioning.
 
-* Ensure that Python and Python3 is installed in your system:
+* Ensure that Python and Python3 are installed in your system:
 run `python --version` and `python3 --version`.
 * Install https://pip.readthedocs.io/en/stable/installing/[Pip]:
 +
@@ -21,20 +22,64 @@ wget https://bootstrap.pypa.io/get-pip.py \
 ----
 * Install required Python packages: `sudo pip install -r requirements.txt`
 
-For server provisioning only:
+=== Virtual machines provisioning
 
-* Copy `config.json` file:
-`cp ansible/inventory/config.json.dist ansible/inventory/config.json`.
-* Config your Digital Ocean and Github tokens in
-`ansible/inventory/config.json`.
-* Configure customers and servers in `ansible/inventory/inventory.json`.
-* Run inventory provisioning:
-`ansible-playbook ansible/inventory.yml -i ansible/inventory/hosts.py`
-* Copy `ansible/inventory/inventory.yml.dist` to
-`ansible/inventory/inventory.yml`.
-* Copy `example.xtuplecloud.com` section to `xdruple.hosts`,
-provide correct domains and passwords.
-* Run `ansible-playbook ansible/provision.yml -i ansible/inventory/inventory.yml --ask-become-pass`
+Virtual machines inventory is described as any other
+https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html[Ansible inventory].
+An example inventory is provided in `ansible/virtual.yml.template`.
+Template should be copied as `ansible/virtual.yml`
+and updated to match local virtual machine inventory
+(`virtual.yml.template` matches the default Vagrant setup
+described by `Vagrantfile` and `vagrant.yaml.template`,
+and allows to directly provision virtual machines created by Vagrant).
+
+[source,yaml]
+----
+all:
+  vars:
+    host:
+      os: macos # <1>
+      username: '' # <2>
+    github:
+      token: '' # <3>
+    timezone: 'America/New_York' # <4>
+    setup_type: local # <5>
+    ansible_user: vagrant # <6>
+    deployer_name: vagrant # <7>
+    deployer_pass: vagrant # <8>
+  hosts: # <9>
+    192.168.33.10: # <10>
+      domain: development.xtau # <11>
+----
+<1> Host machine operating system: `macos`, `linux` or `windows`.
+<2> Host machine user name (e.g. run `whoami` to double check).
+<3> Github token can retrieved following
+https://help.github.com/articles/creating-an-access-token-for-command-line-use[Github documentation].
+<4> Local https://en.wikipedia.org/wiki/List_of_tz_database_time_zones[timezone].
+<5> Setup type should remain `local`.
+Setup type can be changed to other supported type (e.g. `server`)
+for testing without creating servers in the cloud.
+<6> Ansible user should be set to a user that is used for SSH connection
+and should have `sudo` access to run provisioning.
+<7> Deployer is a user that will be used for regular work on the machine.
+<8> Deployer password can just match deployer name.
+<9> Any number of virtual machines can be described in `hosts` section.
+<10> Use virtual machine IP, or domain,
+if DNS for local virtual machines is set up.
+<11> `domain` variable is required for every machine;
+other variables that are used during setup can be provided
+to override default values.
+
+Once `ansible/virtual.yml` is set up
+and virtual machines are up and running,
+`ansible-playbook` command can be run to provision machine(s).
+
+[source,bash]
+----
+ansible-playbook \
+  --inventory ansible/virtual.yml \
+  ansible/provision.yml
+----
 
 == Vagrant setup
 
