@@ -2,7 +2,7 @@
 
 - name: Run development environment setup tasks
   include_tasks: development.yml
-  when: setup_type == 'vagrant'
+  when: setup_type == 'local'
 
 - name: Install common packages
   apt:

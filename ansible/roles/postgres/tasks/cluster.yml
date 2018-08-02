@@ -26,7 +26,7 @@
     src: /etc/postgresql/{{ item.version }}/{{ item.name }}/pg_hba.conf.original
     dest: roles/postgres/files/cluster/pg_hba.conf
     flat: yes
-  when: setup_type == 'vagrant'
+  when: setup_type == 'local'
 - name: Upload custom {{ item.version }}/{{ item.name }}/pg_hba.conf
   template:
     src: cluster/{{ setup_type }}.pg_hba.conf.j2
@@ -44,7 +44,7 @@
     src: /etc/postgresql/{{ item.version }}/{{ item.name }}/postgresql.conf.original
     dest: roles/postgres/files/cluster/postgresql.conf
     flat: yes
-  when: setup_type == 'vagrant'
+  when: setup_type == 'local'
 - name: Upload custom {{ item.version }}/{{ item.name }}/postgresql.conf
   template:
     src: cluster/postgresql.conf.j2

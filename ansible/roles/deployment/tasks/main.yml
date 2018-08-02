@@ -57,5 +57,5 @@
   when: setup_type == 'server'
 - include_tasks: server.yml
   when: setup_type == 'server'
-- include_tasks: vagrant.yml
-  when: setup_type == 'vagrant'
+- include_tasks: local.yml
+  when: setup_type == 'local'

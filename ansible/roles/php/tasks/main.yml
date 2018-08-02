@@ -25,7 +25,7 @@
       template:
         src: mods/xdebug.ini.j2
         dest: /etc/php/7.1/mods-available/xdebug.ini
-  when: setup_type == 'vagrant'
+  when: setup_type == 'local'
 - name: Configure PHP-FPM
   include_tasks: config.yml
   with_items:

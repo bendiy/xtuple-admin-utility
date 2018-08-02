@@ -11,7 +11,7 @@
     src: /etc/php/7.1/{{ item.file }}.original
     dest: roles/php/files/{{ item.file }}
     flat: yes
-  when: setup_type == 'vagrant'
+  when: setup_type == 'local'
 - name: Upload custom {{ item.file }}
   template: 
     src: '{{ item.file }}.j2'

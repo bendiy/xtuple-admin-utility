@@ -27,7 +27,7 @@
     src: /etc/postgresql-common/createcluster.conf.original
     dest: roles/postgres/files/common/createcluster.conf
     flat: yes
-  when: setup_type == 'vagrant'
+  when: setup_type == 'local'
 - name: Upload custom createcluster.conf
   template:
     src: common/createcluster.conf.j2

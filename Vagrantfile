@@ -29,7 +29,7 @@ Vagrant.configure('2') do |config|
       if machine.key?('provision')
         vars = setup.reject { |k| k == 'machines' }
         vars = vars.merge(machine['vars']).merge(
-          setup_type: 'vagrant',
+          setup_type: 'local',
           ansible_user: 'vagrant',
           deployer_name: 'vagrant',
           deployer_pass: 'vagrant',

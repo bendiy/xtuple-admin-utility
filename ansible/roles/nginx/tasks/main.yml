@@ -11,7 +11,7 @@
     dest: roles/nginx/files/sites-available/default
     flat: yes
     fail_on_missing: no
-  when: setup_type == 'vagrant'
+  when: setup_type == 'local'
 - name: Disable default site
   file:
     path: /etc/nginx/sites-enabled/default
@@ -78,7 +78,7 @@
     - name: xDruple development site
       site: xdruple
       template: xdruple.nginx
-  when: setup_type == 'vagrant'
+  when: setup_type == 'local'
 
 - include_tasks: erp.yml
   with_items:
@@ -91,7 +91,7 @@
       ssl: /etc/xtuple/ssl
       key: ssl.key
       certificate: ssl.crt
-  when: setup_type == 'vagrant'
+  when: setup_type == 'local'
 
 - include_tasks: site.yml
   with_items:
