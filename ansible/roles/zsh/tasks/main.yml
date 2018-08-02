@@ -9,8 +9,8 @@
   include_tasks: oh_my_zsh.yml
   vars:
     user: '{{ deployer_name }}'
-- name: Install and configure Oh-My-ZSH for {{ provision_user }}
+- name: Install and configure Oh-My-ZSH for {{ ansible_user }}
   include_tasks: oh_my_zsh.yml
-  when: provision_user != deployer_name
+  when: ansible_user != deployer_name
   vars:
-    user: '{{ provision_user }}'
+    user: '{{ ansible_user }}'

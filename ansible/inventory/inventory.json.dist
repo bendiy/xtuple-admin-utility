@@ -9,7 +9,7 @@
             "setup_type": "server",
             "timezone": "America/New_York",
             "root_pass": "root",
-            "provision_user": "root",
+            "ansible_user": "root",
             "deployer_name": "deployer",
             "deployer_pass": "deployer",
             "domain": "flywheel.net",
