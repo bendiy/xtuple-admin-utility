@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 DATABASE='erp'
 DATABASE_PASSWORD='admin'
-XTUPLE_REPOS_DIR=/opt/xtuple/erp/node
+XTUPLE_REPOS_DIR=/opt/xtuple/node
 XTUPLE_DIR=${XTUPLE_REPOS_DIR}/xtuple
 CONFIG_DIR="/etc/xtuple/${DATABASE}"
 PORT=8443
