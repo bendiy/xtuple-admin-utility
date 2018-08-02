@@ -66,7 +66,9 @@ end
 def vagrant_provider(vm, name, provider)
   vm.provider 'virtualbox' do |vb|
     vb.name = name
+    # See VBoxManage (https://www.virtualbox.org/manual/ch08.html)
     vb.customize ['modifyvm', :id, '--memory', provider['memory']]
+    vb.customize ['modifyvm', :id, '--uartmode1', 'file', "./var/virtualbox/#{name}.log"]
     # Via http://blog.liip.ch/archive/2012/07/25/vagrant-and-node-js-quick-tip.html
     vb.customize ['setextradata', :id, 'VBoxInternal2/SharedFoldersEnableSymlinksCreate/vagrant', '1']
     vb.gui = false

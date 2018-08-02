@@ -38,7 +38,6 @@ xtuple_plv8
 # To track a new empty directory with a .gitkeep file,
 # remove the /xtuple line, create a directory and a .gitkeep file,
 # stash it, and return the /xtuple line back.
-/var
 !/var/**/.gitkeep
 
 # Ansible
