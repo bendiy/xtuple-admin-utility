@@ -32,9 +32,9 @@ php_phars:
     checksum: sha512:fc3ec05b6540642f4aa33e219d08b9c850eb0dc3921acf171b5055e07e62d06d934d6cd32e7b5bdfdd6a13a53acd600eaa36f8f19a37bb835919e339abd103af
   - name: PHPUnit
     bin: phpunit
-    version: 7.0.2
-    url: https://phar.phpunit.de/phpunit-7.1.2.phar
-    checksum: sha256:54d28e405f94b583708f0c677fc52db0bfdf8de16ededc468e1a2b7a46e103e0
+    version: 7.3.0
+    url: https://phar.phpunit.de/phpunit-7.3.0.phar
+    checksum: sha256:a544ef63a728e1e9a1c6eaa91bff203a2f265d0462540b1c52ee1e46436e303f
 
 php_pears:
   - name: PHP_CodeSniffer
