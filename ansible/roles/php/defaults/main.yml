@@ -22,9 +22,9 @@ php_packages:
 php_phars:
   - name: Composer
     bin: composer
-    version: 1.6.3
-    url: https://getcomposer.org/download/1.6.3/composer.phar
-    checksum: sha256:52cb7bbbaee720471e3b34c8ae6db53a38f0b759c06078a80080db739e4dcab6
+    version: 1.7.0
+    url: https://getcomposer.org/download/1.7.0/composer.phar
+    checksum: sha256:88068af567884a6266ef255d3d17053f583c9074dc75161b7a35eda8e553849a
   - name: Phing
     bin: phing
     version: 2.16.1
