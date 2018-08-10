@@ -1,22 +1,24 @@
 ---
 # Install Composer packages
-- name: Prepare directory for {{ item.package }}
-  file:
-    dest: /home/{{ user }}/.composer/apps/{{ item.bin }}
-    state: directory
-    owner: '{{ user }}'
-    group: '{{ user }}'
-- name: Install {{ item.name }} ({{ item.package }})
-  composer:
-    command: require
-    arguments: '{{ item.package }}'
-    working_dir: /home/{{ user }}/.composer/apps/{{ item.bin }}
-  become: true
-  become_user: '{{ user }}'
-- name: Make {{ item.package }} binary available globally
-  file:
-    src: /home/{{ user }}/.composer/apps/{{ item.bin }}/vendor/bin/{{ item.bin }}
-    dest: /usr/local/bin/{{ item.bin }}
-    state: link
-    owner: root
-    group: root
+- block:
+  - name: Prepare directory for {{ item.package }}
+    file:
+      dest: /home/{{ user }}/.composer/apps/{{ item.bin }}
+      state: directory
+      owner: '{{ user }}'
+      group: '{{ user }}'
+  - name: Install {{ item.name }} ({{ item.package }})
+    composer:
+      command: require
+      arguments: '{{ item.package }}'
+      working_dir: /home/{{ user }}/.composer/apps/{{ item.bin }}
+    become: true
+    become_user: '{{ user }}'
+  - name: Make {{ item.package }} binary available globally
+    file:
+      src: /home/{{ user }}/.composer/apps/{{ item.bin }}/vendor/bin/{{ item.bin }}
+      dest: /usr/local/bin/{{ item.bin }}
+      state: link
+      owner: root
+      group: root
+  when: item.package is defined
