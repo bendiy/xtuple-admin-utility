@@ -1,9 +1,0 @@
----
-
-- name: Install Ruby
-  apt:
-    name: '{{ ruby_apt_packages }}'
-    state: latest
-- name: Install Ruby gems
-  include_tasks: gem.yml
-  with_items: '{{ ruby_gems }}'

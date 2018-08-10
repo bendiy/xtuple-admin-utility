@@ -1,24 +1,28 @@
 ---
-# Common tasks for all installations.
-- name: Add git-core/ppa repository
-  apt_repository:
-    repo: 'ppa:git-core/ppa'
-- name: Install basic software
+# Common tasks that should be run for all installations.
+
+- name: Setup locale
+  import_tasks: locale.yml
+
+- name: Setup timezone
+  import_tasks: timezone.yml
+
+- name: Install Git
+  import_tasks: git.yml
+
+- name: Install basic software packages
   apt:
     name: '{{ item.apt }}'
     state: latest
-  with_items:
-    - name: Git
-      apt: git
-    - name: Vim
-      apt: vim
-    - name: Make
-      apt: make
-    - name: gcc
-      apt: gcc
-    - name: g++
-      apt: g++
-    - name: NTP
-      apt: ntp
-    - name: Pip
-      apt: python3-pip
+  loop: '{{ packages|flatten(levels=1) }}'
+
+- name: Setup deployment user
+  import_tasks: deployer.yml
+
+- name: Setup ZSH
+  import_tasks: zsh.yml
+  when: deployer_shell == 'zsh'
+
+- name: Setup Postfix
+  import_tasks: postfix.yml
+  when: postfix

@@ -1,0 +1,26 @@
+---
+# Install and configure Postfix
+- name: Install Postfix
+  apt:
+    name: postfix
+    state: latest
+
+- name: Fetch original postfix/main.cf
+  fetch:
+    src: /etc/postfix/main.cf.proto
+    dest: roles/common/files/main.cf.proto
+    flat: true
+  when: setup_type == 'local'
+
+- name: Install custom postfix/main.cf
+  template:
+    src: main.cf.j2
+    dest: /etc/postfix/main.cf
+  vars:
+    mydomain: '{{ domain }}'
+
+- name: Ensure Postfix is started on boot
+  service:
+    name: postfix
+    state: restarted
+    enabled: yes

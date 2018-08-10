@@ -1,9 +1,0 @@
----
-
-oh_my_zsh_plugins:
-  - composer
-  - cp
-  - git
-  - gem
-  - phing
-  - postgres

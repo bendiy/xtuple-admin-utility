@@ -1,2 +1,27 @@
 ---
 
+locale: en_US.UTF-8
+timezone: America/New_York
+
+packages:
+- apt: gcc
+- apt: g++
+- apt: make
+- apt: ntp
+- apt: python3-pip
+- apt: vim
+
+deployer_name: deployer
+deployer_pass: deployer
+deployer_shell: zsh
+
+oh_my_zsh_theme: robbyrussell
+oh_my_zsh_plugins:
+- composer
+- cp
+- git
+- gem
+- phing
+- postgres
+
+postfix: false

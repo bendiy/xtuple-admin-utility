@@ -1,0 +1,115 @@
+---
+
+- name: Include setup-specific variables
+  include_vars: '{{ setup_type }}.yml'
+- name: Add ondrej/ppa repository
+  apt_repository: 
+    repo: 'ppa:ondrej/php'
+- name: Install PHP 7.1 and packages
+  apt:
+    name: '{{ item }}'
+    state: latest
+  with_items: '{{ php_packages }}'
+- block:
+    - name: Install xDebug package
+      apt:
+        name: php7.1-xdebug
+        state: latest
+    - name: Backup original xdebug.ini
+      copy:
+        src: /etc/php/7.1/mods-available/xdebug.ini
+        dest: /etc/php/7.1/mods-available/xdebug.ini.original
+        remote_src: yes
+        force: no
+    - name: Configure custom xdebug.ini
+      template:
+        src: mods/xdebug.ini.j2
+        dest: /etc/php/7.1/mods-available/xdebug.ini
+  when: setup_type == 'local'
+- name: Configure PHP-FPM
+  include_tasks: config.yml
+  with_items:
+    - file: fpm/php-fpm.conf
+    - file: fpm/pool.d/www.conf
+- name: Backup original fpm/php.ini
+  copy: 
+    src: /etc/php/7.1/fpm/php.ini
+    dest: /etc/php/7.1/fpm/php.ini.original
+    remote_src: yes
+    force: no
+- name: Setup fpm/php.ini max_execution_time
+  lineinfile:
+    path: /etc/php/7.1/fpm/php.ini
+    regexp: '^max_execution_time'
+    line: 'max_execution_time = {{ php_ini.max_execution_time }}'
+- name: Setup fpm/php.ini date.timezone
+  lineinfile:
+    path: /etc/php/7.1/fpm/php.ini
+    regexp: '^;? ?date.timezone'
+    line: 'date.timezone = {{ timezone }}'
+- name: Setup fpm/php.ini memory_limit
+  lineinfile:
+    path: /etc/php/7.1/fpm/php.ini
+    regexp: '^;? ?memory_limit'
+    line: 'memory_limit = {{ php_ini.memory_limit }}'
+- name: Setup fpm/php.ini pcre.backtrack_limit
+  lineinfile:
+    path: /etc/php/7.1/fpm/php.ini
+    regexp: '^;? ?pcre\.backtrack_limit'
+    line: 'pcre.backtrack_limit = {{ php_ini.pcre.backtrack_limit }}'
+- name: Setup fpm/php.ini max_input_vars
+  lineinfile:
+    path: /etc/php/7.1/fpm/php.ini
+    regexp: '^;? ?max_input_vars'
+    line: 'max_input_vars = {{ php_ini.max_input_vars }}'
+  notify:
+    - Restart PHP-FPM
+- name: Backup original cli/php.ini
+  copy: 
+    src: /etc/php/7.1/cli/php.ini
+    dest: /etc/php/7.1/cli/php.ini.original
+    remote_src: yes
+    force: no
+- name: Setup cli/php.ini date.timezone
+  lineinfile:
+    path: /etc/php/7.1/cli/php.ini
+    regexp: '^;? ?date.timezone'
+    line: 'date.timezone = {{ timezone }}'
+- name: Setup cli/php.ini pcre.backtrack_limit
+  lineinfile:
+    path: /etc/php/7.1/cli/php.ini
+    regexp: '^;? ?pcre\.backtrack_limit'
+    line: 'pcre.backtrack_limit = {{ php_ini.pcre.backtrack_limit }}'
+- name: Install PHAR packages
+  include_tasks: phar.yml
+  with_items: '{{ php_phars }}'
+- name: Prepare Composer configuration directory
+  file:
+    dest: /home/{{ deployer_name }}/.composer
+    state: directory
+    owner: '{{ deployer_name }}'
+    group: '{{ deployer_name }}'
+- name: Configure Composer
+  template:
+    src: composer/config.json.j2
+    dest: /home/{{ deployer_name }}/.composer/config.json
+    owner: '{{ deployer_name }}'
+    group: '{{ deployer_name }}'
+- name: Install PEAR packages
+  include_tasks: pear.yml
+  with_items: '{{ php_pears }}'
+  tags: pear
+- name: Install Composer global packages
+  include_tasks: composer.yml
+  with_items: '{{ php_composer }}'
+  vars:
+    user: '{{ deployer_name }}'
+  tags: composer-global
+- name: Ensure PHP-FPM is running
+  service: name=php7.1-fpm state=started
+
+- name: Install required Ruby packages
+  import_tasks: ruby.yml
+
+- name: Setup Drupal cron
+  import_tasks: cron.yml

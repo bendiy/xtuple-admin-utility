@@ -1,0 +1,10 @@
+---
+
+- name: Add git-core/ppa repository
+  apt_repository:
+    repo: 'ppa:git-core/ppa'
+
+- name: Install Git (the latest version)
+  apt:
+    name: git
+    state: latest

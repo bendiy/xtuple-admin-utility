@@ -1,0 +1,61 @@
+---
+
+- name: Install Python passlib library
+  pip:
+    name: passlib
+- name: Add deployer ({{ deployer_name }}) user
+  user:
+    name: '{{ deployer_name }}'
+    password: "{{ deployer_pass|password_hash('sha512') }}"
+    shell: /bin/bash
+    generate_ssh_key: yes
+    ssh_key_comment: '{{ deployer_name }}@{{ ansible_ssh_host }}'
+  when: setup_type == 'server'
+- name: Retrieve generated keys
+  fetch:
+    src: /home/{{ deployer_name }}/.ssh/{{ item }}
+    dest: hosts/{{ ansible_host }}/keys/{{ deployer_name }}/{{ item }}
+    flat: yes
+  when: setup_type == 'server'
+  with_items:
+  - id_rsa.pub
+  - id_rsa
+- name: Protect id_rsa
+  connection: local
+  file:
+    path: hosts/{{ ansible_host }}/keys/{{ deployer_name }}/id_rsa
+    mode: 0600
+  when: setup_type == 'server'
+- name: Add deployer's SSH key as authorized key
+  authorized_key:
+    user: deployer
+    state: present
+    key: "{{ lookup('file', 'hosts/{{ ansible_host }}/keys/{{ deployer_name }}/id_rsa.pub') }}"
+  when: setup_type == 'server'
+- name: Add known_hosts
+  template:
+    src: known_hosts
+    dest: /home/{{ deployer_name }}/.ssh/known_hosts
+    backup: yes
+    owner: '{{ deployer_name }}'
+    group: '{{ deployer_name }}'
+- name: Change .ssh directory ownership back to deployer
+  file:
+    path: /home/{{ deployer_name }}/.ssh
+    state: directory
+    owner: '{{ deployer_name }}'
+    group: '{{ deployer_name }}'
+    recurse: yes
+- name: Add /etc/sudoers.d/{{ deployer_name }} to run www-data
+  template:
+    src: sudoers.j2
+    dest: /etc/sudoers.d/{{ deployer_name }}
+    backup: yes
+    owner: root
+    group: root
+    mode: 0440
+  when: setup_type == 'server'
+- include_tasks: deployer_server.yml
+  when: setup_type == 'server'
+- include_tasks: deployer_local.yml
+  when: setup_type == 'local'
