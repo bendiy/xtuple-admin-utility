@@ -16,22 +16,22 @@
   file:
     path: /var/log/nginx/{{ item.site }}
     state: directory
-- name: Create /opt/xtuple/commerce/{{ item.dir }} directory
+- name: Create /opt/xtuple/portal/{{ item.dir }} directory
   file:
-    path: /opt/xtuple/commerce/{{ item.dir }}
+    path: /opt/xtuple/portal/{{ item.dir }}
     state: directory
     owner: '{{ deployer_name }}'
     group: '{{ deployer_name }}'
     recurse: yes
   when: setup_type == 'server' and item.dir is defined
-- name: Check /opt/xtuple/commerce/{{ item.dir }}/web directory
+- name: Check /opt/xtuple/portal/{{ item.dir }}/web directory
   stat:
-    path: /opt/xtuple/commerce/{{ item.dir }}/web
+    path: /opt/xtuple/portal/{{ item.dir }}/web
   register: dir
   when: setup_type == 'server' and item.dir is defined
-- name: Ensure permissions of /opt/xtuple/commerce/{{ item.dir }}/web directory
+- name: Ensure permissions of /opt/xtuple/portal/{{ item.dir }}/web directory
   file:
-    path: /opt/xtuple/commerce/{{ item.dir }}/web
+    path: /opt/xtuple/portal/{{ item.dir }}/web
     state: directory
     owner: www-data
     group: www-data

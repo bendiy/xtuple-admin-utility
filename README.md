@@ -66,7 +66,8 @@ Full instructions for getting, installing, and using the xTuple Admin Utility ar
 
 ### Directories
 
-- `~/Code/Drupal7` on the host machine would be available as `/opt/xtuple/commerce` on the virtual machine; this location is used by Nginx by default.
+- `~/Code` on the host machine would be available as `/opt/xtuple` on the virtual machine. 
+`/opt/xtuple/portal` location is used by Nginx by default for xTupleCommerce.
 - `xtau` directory on the host machine (e.g. `~/Vagrant/xtau`) is available as `/vagrant` on the virtual machine.
 
 ### Know issues

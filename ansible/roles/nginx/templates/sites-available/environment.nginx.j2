@@ -12,13 +12,13 @@ server {
     server_name {{ site }}.{{ domain_alias }};
     limit_conn arbeit 32;
 
-    root /opt/xtuple/commerce/{{ site }}/drupal/core;
+    root /opt/xtuple/portal/{{ site }}/drupal/core;
 
     access_log /var/log/nginx/{{ site }}/access.log;
     error_log /var/log/nginx/{{ site }}/error.log;
 
     auth_basic "Restricted";
-    auth_basic_user_file /opt/xtuple/commerce/.htpasswd;
+    auth_basic_user_file /opt/xtuple/portal/.htpasswd;
 
     ## Strict Transport Security header for enhanced security. See
     ## http://www.chromium.org/sts.

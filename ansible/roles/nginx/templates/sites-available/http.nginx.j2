@@ -15,7 +15,7 @@ server {
 
     access_log /var/log/nginx/{{ environment }}/access.log;
     error_log /var/log/nginx/{{ environment }}/error.log;
-    root /opt/xtuple/commerce/{{ environment }}/drupal/core;
+    root /opt/xtuple/portal/{{ environment }}/drupal/core;
 
     include apps/drupal/security.conf;
     include apps/drupal/drupal.conf;

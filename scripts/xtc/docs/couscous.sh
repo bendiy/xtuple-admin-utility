@@ -5,5 +5,5 @@ echo `date -R` \
 && git fetch origin \
 && git reset --hard origin/master \
 && couscous generate \
-    --target=/opt/xtuple/commerce/xdruple/docs /home/deployer/source/xdruple \
+    --target=/opt/xtuple/portal/xdruple/docs /home/deployer/source/xdruple \
 && printf "Developers documentation generated.\n\n"

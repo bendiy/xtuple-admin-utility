@@ -46,7 +46,7 @@ do
     sudo ln -s /etc/nginx/sites-available/${ENVIRONMENT}.http.conf /etc/nginx/sites-enabled/${ENVIRONMENT}.http.conf
 
     sudo mkdir -p /var/log/nginx/${ENVIRONMENT} && \
-    sudo mkdir -p /opt/xtuple/commerce/${ENVIRONMENT}
+    sudo mkdir -p /opt/xtuple/portal/${ENVIRONMENT}
 
     # Set real domain for production usage (with or without SSL)
     if [ ${ENVIRONMENT} = "live" ]
@@ -67,9 +67,9 @@ do
     fi
 done
 
-sudo chown -R ${DEPLOYER_NAME}:${DEPLOYER_NAME} /opt/xtuple/commerce/*
+sudo chown -R ${DEPLOYER_NAME}:${DEPLOYER_NAME} /opt/xtuple/portal/*
 
 sudo apt-get -q -y install apache2-utils && \
-sudo htpasswd -b -c /opt/xtuple/commerce/.htpasswd ${HTTP_AUTH_NAME} ${HTTP_AUTH_PASS}
+sudo htpasswd -b -c /opt/xtuple/portal/.htpasswd ${HTTP_AUTH_NAME} ${HTTP_AUTH_PASS}
 
 sudo service nginx restart

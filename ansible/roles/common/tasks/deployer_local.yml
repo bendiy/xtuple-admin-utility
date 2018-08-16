@@ -24,7 +24,7 @@
     when: not var_xtuple_keys_dir.stat.exists
   - name: Match host username for shared directories
     stat:
-      path: /opt/xtuple/commerce
+      path: /opt/xtuple/portal
     register: dir
     when:
   - name: Adjust shared directories owner

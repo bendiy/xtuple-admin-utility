@@ -9,6 +9,6 @@
     - name: Copy deployment archive
       unarchive:
         src: hosts/{{ ansible_host }}/deploy/{{ deploy }}
-        dest: /opt/xtuple/commerce/dev/
+        dest: /opt/xtuple/portal/dev/
         owner: '{{ deployer_name }}'
         group: '{{ deployer_name }}'

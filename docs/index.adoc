@@ -135,8 +135,9 @@ mkdir -p ~/Vagrant \
 
 === Directories
 
-* `~/Code/Drupal7` on the host machine
-would be available as `/opt/xtuple/commerce` on the virtual machine.
+- `~/Code` on the host machine
+would be available as `/opt/xtuple` on the virtual machine.
+`/opt/xtuple/portal` location is used by Nginx by default for xTupleCommerce.
 * `~/Vagrant/xtau` directory on the host machine
 would be available as `/vagrant` on the virtual machine.
 * `~/Vagrant/xtau/xtuple` directory is available as `/var/xtuple`,

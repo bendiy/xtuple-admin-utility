@@ -6,7 +6,7 @@ echo `date -R` \
 && git reset --hard origin/master \
 && apigen generate \
     --source /home/deployer/source/xdruple/xdruple \
-    --destination /opt/xtuple/commerce/xdruple/api \
+    --destination /opt/xtuple/portal/xdruple/api \
     --config /home/deployer/source/xdruple/apigen.neon \
     --quiet \
 && printf "API documentation generated.\n\n"
