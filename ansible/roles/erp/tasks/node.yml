@@ -41,3 +41,11 @@
     global: true
     executable: /usr/local/lib/node-v{{ xtau_erp_node_js.version }}-linux-x64/bin/npm
     version: '{{ xtau_erp_npm.version }}'
+
+- name: Setup npm /usr/local/bin/npm symlink
+  file:
+    path: /usr/local/bin/npm
+    src: /usr/local/lib/node-v{{ xtau_erp_node_js.version }}-linux-x64/bin/npm
+    state: link
+    group: root
+    owner: root
