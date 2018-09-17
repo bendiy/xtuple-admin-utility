@@ -20,3 +20,10 @@ sudo -u postgres psql -At -d ${DATABASE} <<EOSCRIPT
   RETURNS VOID AS 'BEGIN RETURN; END;' LANGUAGE plpgsql;
 EOSCRIPT
 sudo -u postgres pg_restore --dbname "${DATABASE}" ${DATABASE_BACKUP}
+
+sudo -u postgres psql -d ${DATABASE} -c "DELETE FROM xt.sessionstore;"
+sudo -u postgres psql -d ${DATABASE} -c "UPDATE xt.oa2client SET oa2client_org = current_database();"
+sudo -u postgres psql -d ${DATABASE} -c "DELETE FROM xt.js WHERE js_namespace = 'XDRUPLE' AND js_context = 'xdruple';"
+sudo -u postgres psql -d ${DATABASE} -c "DELETE FROM xt.js WHERE js_namespace = 'OAUTH2' AND js_context = 'xtuple';"
+sudo -u postgres psql -d ${DATABASE} -c "DROP VIEW xdruple.oauth_2_token;"
+sudo -u postgres psql -d ${DATABASE} -c "DROP VIEW xdruple.oauth_2_client;"

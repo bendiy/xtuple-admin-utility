@@ -10,6 +10,7 @@ export OAUTH2_SERVER_PORT_1=${PORT}
 export OAUTH2_SERVER_PORT_2=${PORT}
 
 cd ${XTUPLE_REPOS_DIR}/xtuple
+sudo rm -rf node_modules
 npm install
 cd ${XTUPLE_REPOS_DIR}/xtuple/test/lib
 cat sample_login_data.js \
@@ -20,6 +21,7 @@ cat sample_login_data.js \
   > login_data.js
 
 cd ${XTUPLE_REPOS_DIR}/private-extensions
+sudo rm -rf node_modules
 npm install
 cd ${XTUPLE_REPOS_DIR}/private-extensions/test/lib
 cat sample_login_data.js \
@@ -32,9 +34,11 @@ cd ${XTUPLE_REPOS_DIR}/private-extensions
 npm run-script test-build
 
 cd ${XTUPLE_REPOS_DIR}/payment-gateways
+make clean
 make
 
 cd ${XTUPLE_REPOS_DIR}/xdruple-extension
+make clean
 make
 
 pushd ${XTUPLE_REPOS_DIR}/xtuple
