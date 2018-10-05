@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+cd {{ xtau_erp_node_path }}/{{ item.name }}/xtuple \
+&& /usr/bin/env node \
+  {{ xtau_erp_node_path }}/{{ item.name }}/xtuple/node-datasource/main.js \
+  -c {{ xtau_erp_configuration_path }}/{{ item.name }}/config.js

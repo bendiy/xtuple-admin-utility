@@ -10,33 +10,16 @@
     state: latest
   with_items: '{{ xtau_erp_packages.common }}'
 
-- name: Setup node and npm
-  include_tasks: node.yml
+- name: Install NVM
+  include_tasks: nvm.yml
+
+- name: Install NodeJS v{{ item.node }}
+  shell: 'nvm install {{ item.node }}'
+  loop: '{{ xtau_erp_databases }}'
 
 - name: Setup xtuple-Xvfb service
   include_tasks: xvfb.yml
 
-- name: Create directory for encryption data
-  file:
-    path: '{{ xtau_erp_private_path }}'
-    owner: root
-    group: root
-    state: directory
-
-- name: Setup encryption data
-  include_tasks: encryption.yml
-  with_items:
-    - name: salt.txt
-    - name: encryption.txt
-
-- name: Create SSL certificate
-  include_tasks: ssl.yml
-
-- name: Setup MWC config.js
-  template:
-    src: config.js.j2
-    dest: '{{ xtau_erp_configuration_path }}/config.js'
-
-# TODO: use database parameter
-- name: Start xtuple-erp service
-  include_tasks: service.yml
+- name: Setup ERP databases
+  include_tasks: database.yml
+  with_items: '{{ xtau_erp_databases }}'

@@ -16,4 +16,4 @@ Group={{ deployer_name }}
 Environment=NODE_ENV=production
 ExecStop=/bin/kill -9 $MAINPID
 SyslogIdentifier={{ ansible_env.SYSLOGID | default('') }}
-ExecStart=/usr/bin/env node {{ xtau_erp_node_path }}/xtuple/node-datasource/main.js -c {{ xtau_erp_configuration_path }}/config.js
+ExecStart=/etc/xtuple/{{ item.name }}/start.sh

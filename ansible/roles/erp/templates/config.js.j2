@@ -6,7 +6,7 @@ newcap:true, noarg:true, regexp:true, undef:true, strict:true, trailing:true, wh
   "use strict";
 
   module.exports = {
-    processName: "node-datasource",
+    processName: "erp-{{ item.name }}",
     allowMultipleInstances: true,
     client: {
       freeDemo: false,
@@ -25,17 +25,17 @@ newcap:true, noarg:true, regexp:true, undef:true, strict:true, trailing:true, wh
       pgPoolSize: 15,
       pgWorker: false,
       bindAddress: "0.0.0.0",
-      redirectPort: 8888,
+      redirectPort: {{ 8888 + (item.port - 8443) }},
       // proxyPort is the port the app will be redirected to
       // this is useful if there is a proxy in front of the app listening
       // on a different port
       proxyPort: null,
-      port: 8443,
-      encryptionKeyFile: "{{ xtau_erp_private_path }}/encryption.txt",
-      keyFile: "{{ xtau_erp_private_path }}/server.pem",
-      certFile: "{{ xtau_erp_private_path }}/server.crt",
+      port: {{ item.port }},
+      encryptionKeyFile: "{{ private_path }}/encryption.txt",
+      keyFile: "{{ private_path }}/server.pem",
+      certFile: "{{ private_path }}/server.crt",
       caFile: null, // needs to be an array of strings
-      saltFile: "{{ xtau_erp_private_path }}/salt.txt",
+      saltFile: "{{ private_path }}/salt.txt",
       xTupleDbDir: "/usr/local/xtuple/databases",
       psqlPath: "psql",
       nodePath: "node",
@@ -59,8 +59,8 @@ newcap:true, noarg:true, regexp:true, undef:true, strict:true, trailing:true, wh
       // these properties are dynamically registered with the
       // node discovery service
 
-      // the unique identifer registered for this service/instance
-      name: "erp-datasource",
+      // the unique identifier registered for this service/instance
+      name: "erp-{{ item.name }}",
 
       // human-friendly description of this service
       description: "NA",
@@ -72,7 +72,7 @@ newcap:true, noarg:true, regexp:true, undef:true, strict:true, trailing:true, wh
       // servers, etc.
       location: "NA",
       // Add each database to the array.
-      databases: ["erp"],
+      databases: ["{{ item.name }}"],
       testDatabase: "" // this must remain empty for production datasources
     },
     integration: {
@@ -86,9 +86,9 @@ newcap:true, noarg:true, regexp:true, undef:true, strict:true, trailing:true, wh
     },
     biServer: {
       bihttphost: "localhost",
-      bihttpport: 8080,
+      bihttpport: {{ 8080 + (item.port - 8443) }},
       bihttpshost: "localhost",
-      bihttpsport: 8443,
+      bihttpsport: {{ item.port }},
       catalog: "xTuple",
       tenantname: "default",
       restkeyfile: "/etc/xtuple/lib/rest-keys"

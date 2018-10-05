@@ -73,17 +73,17 @@ xtau_erp_packages:
     - xorg
     - zlib1g-dev
 
-xtau_erp_node_js:
-  version: 8.11.4
-  sha256: c69abe770f002a7415bd00f7ea13b086650c1dd925ef0c3bf8de90eabecc8790
+xtau_erp_nvm:
+  source: /usr/local/src/nvm
+  version: 'v0.33.11'
 
-xtau_erp_npm:
-  version: 6.4.1
+xtau_erp_databases:
+  - name: xdruple_1_0_x
+    node: 0.10.48
+    port: 8443
+  - name: xdruple_1_1_x
+    node: 8.11.4
+    port: 8444
 
-xtau_erp_database:
-  name: erp
-
-xtau_erp_configuration_path: /etc/xtuple/{{ xtau_erp_database.name }}
-xtau_erp_private_path: '{{ xtau_erp_configuration_path }}/private'
-
+xtau_erp_configuration_path: /etc/xtuple
 xtau_erp_node_path: /opt/xtuple/node

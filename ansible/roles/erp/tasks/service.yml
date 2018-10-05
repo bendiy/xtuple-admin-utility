@@ -1,13 +1,23 @@
 ---
 
+- name: Copy start.sh template
+  template:
+    src: start.sh.j2
+    dest: /etc/xtuple/{{ item.name }}/start.sh
+
+- name: Make start.sh executable
+  file:
+    path: /etc/xtuple/{{ item.name }}/start.sh
+    mode: 0755
+
 - name: Copy xtuple systemd template
   template:
     src: xtuple-systemd.service
-    dest: /etc/systemd/system/xtuple-erp.service
+    dest: /etc/systemd/system/xtuple-{{ item.name }}.service
 
-- name: Start xtuple-erp service
+- name: Start xtuple-{{ item.name }} service
   service:
-    name: xtuple-erp
+    name: xtuple-{{ item.name }}
     enabled: yes
     daemon_reload: yes
     state: started

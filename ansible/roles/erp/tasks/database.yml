@@ -1,0 +1,31 @@
+---
+
+- name: Create directory for encryption data
+  file:
+    path: '{{ xtau_erp_configuration_path }}/{{ item.name }}/private'
+    owner: root
+    group: root
+    state: directory
+
+- name: Setup encryption data
+  include_tasks: encryption.yml
+  loop:
+  - name: salt.txt
+  - name: encryption.txt
+  loop_control:
+    loop_var: file
+
+- name: Create SSL certificate
+  include_tasks: ssl.yml
+  vars:
+    private_path: '{{ xtau_erp_configuration_path }}/{{ item.name }}/private'
+
+- name: Setup MWC config.js
+  template:
+    src: config.js.j2
+    dest: '{{ xtau_erp_configuration_path }}/{{ item.name }}/config.js'
+  vars:
+    private_path: '{{ xtau_erp_configuration_path }}/{{ item.name }}/private'
+
+- name: Start xtuple-{{ item.name }} service
+  include_tasks: service.yml

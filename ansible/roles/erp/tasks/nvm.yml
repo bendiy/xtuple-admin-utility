@@ -1,0 +1,34 @@
+---
+
+- stat:
+    path: /usr/local/bin/nvm
+  register: nvm
+
+- name: Download and install NVM
+  block:
+
+  - name: Clone NVM
+    git:
+      repo: 'https://github.com/creationix/nvm.git'
+      dest: '{{ xtau_erp_nvm.source }}'
+      version: '{{ xtau_erp_nvm.version }}'
+
+  - name: Create /usr/local/bin/{{ item }} script
+    template:
+      src: nvm/{{ item }}.sh.j2
+      dest: /usr/local/bin/{{ item }}
+    loop:
+    - nvm
+    - node
+    - npm
+
+  - name: Make /usr/local/bin/{{ item }} executable
+    file:
+      path: /usr/local/bin/{{ item }}
+      mode: 0755
+    loop:
+    - nvm
+    - node
+    - npm
+
+  when: not nvm.stat.exists
