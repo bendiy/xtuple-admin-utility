@@ -3,6 +3,7 @@ DATABASE=xdruple_1_1_x
 DATABASE_BACKUP=/vagrant/var/backups/prodiem_stage_erp-2018-10-05.backup
 DATABASE_ENCRYPTION=/vagrant/var/backups/prodiem_stage_erp_encryption_key.txt
 DATABASE_PASSWORD='admin'
+APPLICATION='http://flywheel.xd/'
 
 sudo cp ${DATABASE_ENCRYPTION} /etc/xtuple/${DATABASE}/private/encryption.txt
 
@@ -48,6 +49,12 @@ pushd ${XTUPLE_REPOS_DIR}
       ./scripts/build_app.js \
         -c ${CONFIG_DIR}/config.js \
         -d ${DATABASE}
+      ./scripts/keygen.js \
+        -c ${CONFIG_DIR}/config.js \
+        -d ${DATABASE} \
+        -a ${APPLICATION} \
+        -i ${DATABASE} \
+        -p /var/xtuple/keys/${DATABASE}.p12
     popd
 popd
 
