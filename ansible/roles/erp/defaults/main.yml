@@ -27,7 +27,6 @@ xtau_erp_packages:
     - wget
     - whiptail
     - xsltproc
-    - xvfb
   development:
     - bison
     - flex

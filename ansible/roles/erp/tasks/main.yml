@@ -17,9 +17,6 @@
   shell: 'nvm install {{ item.node }}'
   loop: '{{ xtau_erp_databases }}'
 
-- name: Setup xtuple-Xvfb service
-  include_tasks: xvfb.yml
-
 - name: Setup ERP databases
   include_tasks: database.yml
   with_items: '{{ xtau_erp_databases }}'
