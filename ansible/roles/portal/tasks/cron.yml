@@ -11,7 +11,7 @@
     minute: '{{ item.minute }}'
     user: '{{ deployer_name }}'
     job: 'sudo -u www-data sh -c "cd /opt/xtuple/portal/{{ item.name }} && ./console.php cron:run" >> /var/log/xtuple/cron/{{ item.name }}.log 2>&1'
-  with_items:
+  loop:
     - name: dev
       minute: 30
     - name: stage

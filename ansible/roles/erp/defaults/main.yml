@@ -2,75 +2,75 @@
 
 xtau_erp_packages:
   common:
-    - build-essential
-    - bzip2
-    - cups
-    - curl
-    - dialog
-    - git
-    - jq
-    - libauthen-pam-perl
-    - libavahi-compat-libdnssd-dev
-    - libc++1
-    - libio-pty-perl
-    - libnet-ssleay-perl
-    - libpam-runtime
-    - libssl-dev
-    - openssl
-    - ntp
-    - perl
-    - python
-    - python-magic
-    - python-software-properties
-    - s3cmd
-    - unzip
-    - wget
-    - whiptail
-    - xsltproc
+    - apt: build-essential
+    - apt: bzip2
+    - apt: cups
+    - apt: curl
+    - apt: dialog
+    - apt: git
+    - apt: jq
+    - apt: libauthen-pam-perl
+    - apt: libavahi-compat-libdnssd-dev
+    - apt: libc++1
+    - apt: libio-pty-perl
+    - apt: libnet-ssleay-perl
+    - apt: libpam-runtime
+    - apt: libssl-dev
+    - apt: openssl
+    - apt: ntp
+    - apt: perl
+    - apt: python
+    - apt: python-magic
+    - apt: python-software-properties
+    - apt: s3cmd
+    - apt: unzip
+    - apt: wget
+    - apt: whiptail
+    - apt: xsltproc
   development:
-    - bison
-    - flex
-    - gperf
-    - libasound2-dev
-    - libbz2-dev
-    - libcap-dev
-    - libcups2-dev
-    - libdrm-dev
-    - libfontconfig1-dev
-    - libgcrypt11-dev
-    - libglu1-mesa-dev
-    - libgstreamer-plugins-base0.10-dev
-    - libgstreamer0.10-dev
-    - libicu-dev
-    - libkrb5-dev
-    - libldap2-dev
-    - libmysqlclient-dev
-    - libnss3-dev
-    - libpam0g-dev
-    - libpci-dev
-    - libperl-dev
-    - libpq-dev
-    - libpulse-dev
-    - libreadline6-dev
-    - libsqlite0-dev
-    - libssl-dev
-    - libudev-dev
-    - libx11-xcb-dev
-    - libxcb*
-    - libxcomposite-dev
-    - libxcursor-dev
-    - libxdamage-dev
-    - libxi-dev
-    - libxml2-dev
-    - libxrandr-dev
-    - libxrender-dev
-    - libxslt1-dev
-    - libxtst-dev
-    - readline-common
-    - ruby
-    - unixodbc-dev
-    - xorg
-    - zlib1g-dev
+    - apt: bison
+    - apt: flex
+    - apt: gperf
+    - apt: libasound2-dev
+    - apt: libbz2-dev
+    - apt: libcap-dev
+    - apt: libcups2-dev
+    - apt: libdrm-dev
+    - apt: libfontconfig1-dev
+    - apt: libgcrypt11-dev
+    - apt: libglu1-mesa-dev
+    - apt: libgstreamer-plugins-base0.10-dev
+    - apt: libgstreamer0.10-dev
+    - apt: libicu-dev
+    - apt: libkrb5-dev
+    - apt: libldap2-dev
+    - apt: libmysqlclient-dev
+    - apt: libnss3-dev
+    - apt: libpam0g-dev
+    - apt: libpci-dev
+    - apt: libperl-dev
+    - apt: libpq-dev
+    - apt: libpulse-dev
+    - apt: libreadline6-dev
+    - apt: libsqlite0-dev
+    - apt: libssl-dev
+    - apt: libudev-dev
+    - apt: libx11-xcb-dev
+    - apt: libxcb*
+    - apt: libxcomposite-dev
+    - apt: libxcursor-dev
+    - apt: libxdamage-dev
+    - apt: libxi-dev
+    - apt: libxml2-dev
+    - apt: libxrandr-dev
+    - apt: libxrender-dev
+    - apt: libxslt1-dev
+    - apt: libxtst-dev
+    - apt: readline-common
+    - apt: ruby
+    - apt: unixodbc-dev
+    - apt: xorg
+    - apt: zlib1g-dev
 
 xtau_erp_nvm:
   source: /usr/local/src/nvm

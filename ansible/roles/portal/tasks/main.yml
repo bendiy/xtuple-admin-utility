@@ -7,9 +7,9 @@
     repo: 'ppa:ondrej/php'
 - name: Install PHP 7.1 and packages
   apt:
-    name: '{{ item }}'
+    name: '{{ item.apt }}'
     state: latest
-  with_items: '{{ php_packages }}'
+  loop: '{{ php_packages|flatten(levels=1) }}'
 - block:
     - name: Install xDebug package
       apt:

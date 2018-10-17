@@ -17,7 +17,7 @@
     dest: hosts/{{ ansible_host }}/keys/{{ deployer_name }}/{{ item }}
     flat: yes
   when: setup_type == 'server'
-  with_items:
+  loop:
   - id_rsa.pub
   - id_rsa
 - name: Protect id_rsa

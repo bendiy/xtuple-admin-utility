@@ -6,9 +6,9 @@
 
 - name: Install common packages
   apt:
-    name: '{{ item }}'
+    name: '{{ item.apt }}'
     state: latest
-  with_items: '{{ xtau_erp_packages.common }}'
+  loop: '{{ xtau_erp_packages.common|flatten(levels=1) }}'
 
 - name: Install NVM
   include_tasks: nvm.yml

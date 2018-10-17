@@ -32,14 +32,14 @@
   file:
     path: /etc/nginx/{{ item }}
     state: directory
-  with_items:
+  loop:
     - apps/drupal
     - conf.d
 - name: Upload Nginx configuration files
   template:
     src: '{{ item.src }}.nginx.j2'
     dest: /etc/nginx/{{ item.src }}.conf
-  with_items:
+  loop:
     - src: apps/drupal/drupal
     - src: apps/drupal/fastcgi_drupal
     - src: apps/drupal/fastcgi_no_args_drupal

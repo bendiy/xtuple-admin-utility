@@ -3,6 +3,6 @@
 
 - name: Install development environment packages
   apt:
-    name: '{{ item }}'
+    name: '{{ item.apt }}'
     state: latest
-  with_items: '{{ xtau_erp_packages.development }}'
+  loop: '{{ xtau_erp_packages.development|flatten(levels=1) }}'
