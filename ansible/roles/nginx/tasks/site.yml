@@ -37,9 +37,14 @@
     group: www-data
     recurse: yes
   when: setup_type == 'server' and item.dir is defined and dir.stat.exists
-- name: Obtain certificate
-  command: 'certbot --nginx -n --register-unsafely-without-email --agree-tos -d {{ item.site }}.{{ domain_alias }}'
-  when: item.certbot is defined and certbot_mail is undefined
-- name: Obtain certificate
-  command: 'certbot --nginx -n -m={{ certbot_mail }} --agree-tos -d {{ item.site }}.{{ domain_alias }}'
-  when: item.certbot is defined and certbot_mail is defined
+- name: Obtain a Certbot certificate
+  block:
+  - name: Obtain certificate
+    command: 'certbot --nginx -n --register-unsafely-without-email --agree-tos -d {{ item.site }}.{{ domain_alias }}'
+    when: item.certbot is defined and certbot_mail is undefined
+  - name: Obtain certificate
+    command: 'certbot --nginx -n -m={{ certbot_mail }} --agree-tos -d {{ item.site }}.{{ domain_alias }}'
+    when: item.certbot is defined and certbot_mail is defined
+  rescue:
+  - debug:
+      msg: 'Failed to obtain a Certbot certificate'
