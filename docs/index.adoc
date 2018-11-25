@@ -96,7 +96,7 @@ ansible-playbook \
 make sure `brew doctor` returns `Your system is ready to brew.`
 and `brew update` returns `Already up-to-date.`;
 ** _(Ubuntu Linux)_ run `sudo apt-get update && sudo apt-get upgrade`
-** run `gem update`.
+** run `sudo gem update`.
 * Download and install the latest
 https://www.virtualbox.org/wiki/Downloads[VirtualBox].
 * Download and install the latest
@@ -119,9 +119,9 @@ mkdir -p ~/Vagrant \
 && git clone git@github.com:amikheychik/xtuple-admin-utility.git ~/Vagrant/xtau \
 && cd $_
 ----
-* Copy `config.yaml.dist` as `config.yaml`:
-`cp config.yaml.dist config.yaml`.
-* Edit `config.yaml` with your local data:
+* Copy `vagrant.yaml.template` as `vagrant.yaml`:
+`cp vagrant.yaml.template vagrant.yaml`.
+* Edit `vagrant.yaml` with your local data:
 ** ensure the IP address for virtual machine is not used (`192.168.33.xyz` pattern is recommended).
 ** setup your local https://en.wikipedia.org/wiki/List_of_tz_database_time_zones[timezone].
 ** setup the synced folders.
@@ -130,7 +130,7 @@ mkdir -p ~/Vagrant \
 ** setup your host machine username
 (run `whoami` in your terminal).
 * Run `vagrant up` to start your virtual machine.
-* Run `vagrant reload --provision` to reboot virtual machine/
+* Run `vagrant reload --provision` to reboot virtual machine.
 * _(MacOSX)_ Run `vagrant dns --install` to activate `vagrant-dns` plugin (user password will be asked).
 
 === Directories
@@ -159,9 +159,9 @@ It's recommended to start with the default https://github.com/xtuple/flywheel[Fl
 
 === Host machine software
 
-* MacOSX `10.13.2`
-* VirtualBox `5.2.14`
-* Vagrant `2.1.2`
+* MacOSX `10.14.1`
+* VirtualBox `5.2.22`
+* Vagrant `2.2.2`
 
 === Virtual machine software
 
