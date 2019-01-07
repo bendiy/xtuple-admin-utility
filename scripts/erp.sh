@@ -51,6 +51,8 @@ pushd ${XTUPLE_REPOS_DIR}
       ./scripts/build_app.js \
         -c ${CONFIG_DIR}/config.js \
         -d ${DATABASE}
+    popd
+    pushd ./xdruple-extension
       ./scripts/keygen.js \
         -c ${CONFIG_DIR}/config.js \
         -d ${DATABASE} \
