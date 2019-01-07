@@ -31,10 +31,12 @@ XTUPLE_REPOS_DIR=/opt/xtuple/node/${DATABASE}
 pushd ${XTUPLE_REPOS_DIR}
     pushd ./xtuple
         sudo rm -rf node_modules
+        git submodule update --init
         npm install
     popd
     pushd ./private-extensions
         sudo rm -rf node_modules
+        git submodule update --init
         npm install
     popd
     pushd ./payment-gateways
