@@ -59,7 +59,12 @@ end
 
 def vagrant_dns(machine, config)
   return unless Vagrant.has_plugin? 'vagrant-dns'
-  machine.dns.tld = config['tld']
+
+  if config.key?('tlds')
+    machine.dns.tlds = config['tlds']
+  elsif config.key?('tld')
+    machine.dns.tld = config['tld']
+  end
   machine.dns.patterns = config['patterns'].map { |e| Regexp.new(e) }
 end
 
