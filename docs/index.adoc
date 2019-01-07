@@ -5,6 +5,204 @@
 :source-highlighter: coderay
 :source-language: bash
 
+xTuple Admin Utility can be used to prepare (provision) remote servers
+and local virtual machines to work on or launch xTuple ERP server.
+
+== Local development with Vagrant
+
+https://www.vagrantup.com[Vagrant] is a tool for building and managing virtual machines.
+Vagrant supports different https://www.vagrantup.com/docs/providers/[providers],
+including VirtualBox, VMWare and Docker,
+but only https://www.virtualbox.org[VirtualBox] is currently supported by xTAU.
+
+=== How it works
+
+. Developer clones projects code into `~/Code/xTuple` directory on the host machine.
+** ERP server-side code (`xtuple/xtuple` and extensions) is located in `~/Code/xTuple/node` directory.
+** PHP libraries (`xtuple/php-util`, etc.) are located in `~/Code/xTuple/php` directory.
+** xTupleCommerce projects (`xtuple/flywheel`, `xtuple/prodiem`, etc.) are located in `~/Code/xTuple/portal` directory
+and projects' directories end with `.xd` suffix (e.g. `flywheel.xd`, `prodiem.xd`).
++
+[NOTE]
+`~/Code/xTuple` directory may be configured,
+but internal structure (`node` and `portal`) is used by setup scripts,
+hence should remain the same.
++
+. Directory `~/Code/xTuple` is shared with a virtual machine using SSHFS as a `/opt/xtuple` directory.
++
+[NOTE]
+Vagrant supports different ways to https://www.vagrantup.com/docs/synced-folders/[sync folders],
+but SSHFS is used as it declares support for all three major operating system.
+NFS might be a good alternative for SSHFS, but it works only with Linux and MacOSX.
++
+. Developer runs Vagrant to create and launch a virtual machine.
+Virtual machine allows to isolate versions of the packages.
+. Once the machine is up and running,
+developer logs into that machine to run scripts required for development
+(e.g. running tests, updating dependencies, creating builds).
+. Because of the file sharing,
+developer can still do all the development in their comfortable environment,
+using an IDE, visual Git clients and diff tools, etc.
+. All output by the virtual machine (logs, xDebug) is shared with `./var` directory inside xTAU directory.
+. Virtual machines should be treated as development environment
+that can be destroyed and re-created at any moment
+(for example, to update box version used for the virtual machine).
+All the user data (database content) should be possible to re-instantiate from code.
+[NOTE]
+As in some cases it might not be possible
+(e.g. debugging a customer-specific database),
+use output directory (`./var`) for backups (e.g. `./var/backups`).
+
+=== Installation
+
+==== MacOSX
+
+MacOSX installation uses https://brew.sh[Homebrew] as a package manager for MacOS
+and https://github.com/Homebrew/homebrew-cask[Homebrew Cask] for applications
+that are usually installed via user interface.
+
+. Upgrade Ruby gems: `sudo gem update`
+(`/usr/bin/ruby` and `/usr/bin/gem` are pre-installed on MacOSX)
+. Install `brew`: `/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
+. Update Brew formulae `brew update`
+. Upgrade packages installed with Brew: `brew upgrade`
+. Check if there are any problem: `brew doctor`
+(should return `Your system is ready to brew.`)
+. Install Python 3: `brew install python3`
+(it also installs https://pip.pypa.io/[Pip] as `pip3`)
+. Install Ansible: `brew install ansible`
+. Install VirtualBox: `brew cask install virtualbox`
+(installation requires to enable VirtualBox kernel extension in `System Preferences → Security & Privacy → General`)
+. Install Vagrant: `brew cask install vagrant`
+(installation requires `sudo` password)
+. Install Vagrant plugins:
+.. `link:https://github.com/dotless-de/vagrant-vbguest[dotless-de/vagrant-vbguest]`,
+run: `vagrant plugin install vagrant-vbguest`
+.. `link:https://github.com/dustymabe/vagrant-sshfs[dustymabe/vagrant-sshfs]`,
+run: `vagrant plugin install vagrant-sshfs`
+.. `link:https://github.com/BerlinVagrant/vagrant-dns[BerlinVagrant/vagrant-dns]`,
+run: `vagrant plugin install vagrant-dns`
++
+[IMPORTANT]
+This plugin is only compatible with MacOSX and *must not* be installed on Linux or Windows.
++
+. Clone  https://github.com/amikheychik/xtuple-admin-utility[xTuple Admin Utility] repository
+to the directory for virtual machines setup (e.g. `~/Vagrant`):
++
+[source,bash]
+----
+mkdir -p ~/Vagrant \
+&& git clone git@github.com:amikheychik/xtuple-admin-utility.git ~/Vagrant/xtau \
+&& cd $_
+----
++
+Vagrant commands should be run from this directory (`~/Vagrant/xtau`)
+
+==== Linux
+
+Linux installation has the same steps as MacOSX,
+but would require different package managers (depends on distribution)
+and *must not* install `vagrant-dns` plugin.
+
+==== Windows
+
+There are no reliable Windows installation instructions at the moment,
+but all the software (except `vagrant-dns` plugin) supports Windows.
+
+=== Launching a virtual machine
+
+. Copy `vagrant.yaml.template` as `vagrant.yaml`:
+`cp vagrant.yaml.template vagrant.yaml`.
+. Edit `vagrant.yaml` with your local data:
+.* ensure the IP address for virtual machine is not used
+(`192.168.33.xyz` pattern is recommended).
+If that's your first Vagrant machine, default IP `192.168.33.10` should work.
+.* setup your local https://en.wikipedia.org/wiki/List_of_tz_database_time_zones[timezone].
+.* change `~/Code/xTuple` directory to the directory with the code.
+(`/opt/xtuple` should remain as is).
+.* ensure you have the right host machine OS set.
+.* setup your https://help.github.com/articles/creating-an-access-token-for-command-line-use[Github token].
+.* setup your host machine username
+(should be what `whoami` returns in your terminal).
+. Run `vagrant up` to start your virtual machine.
+. Run `vagrant reload --provision` to reboot virtual machine.
+. *(MacOSX only)* Run `vagrant dns --install` to activate `vagrant-dns` plugin
+(`sudo` password will be asked).
+.* Run `ping xtuple.xd` to check that DNS is working.
+
+=== Directories
+
+* `~/Code` on the host machine
+would be available as `/opt/xtuple` on the virtual machine.
+** `/opt/xtuple/portal` location is used by Nginx by default for xTupleCommerce.
+* `~/Vagrant/xtau` directory on the host machine
+would be available as `/vagrant` on the virtual machine.
+* `~/Vagrant/xtau/var/` directory is available as `/var/xtuple/`,
+and it's primary purpose to store output from the server:
+** `~/Vagrant/xtau/output/backups` can be used for database backups.
+** `~/Vagrant/xtau/output/keys` contains `.p12` keys used for oAuth connection.
+** `~/Vagrant/xtau/output/logs` can be used for logs.
+** `~/Vagrant/xtau/output/virtualbox` contains VirtualBox logs.
+** `~/Vagrant/xtau/output/xdebug` contains profiling files from xdebug
+(when profiling launched).
+
+=== xTupleCommerce project installation
+
+Once the virtual machine is up and running,
+you can proceed with installation of your xTupleCommerce project(s).
+Each project has a standard set of steps,
+yet, it's recommended to always use the `README.adoc` file in the project itself,
+in case there were any customizations.
+
+It's recommended to start with the default https://github.com/xtuple/flywheel[Flywheel] project.
+
+=== Host machine software
+
+* MacOSX `10.14.2`
+* VirtualBox `6.0.0`
+* Vagrant `2.2.2`
+
+=== Virtual machine software
+
+* Ubuntu `16.04`
+* Nginx `1.10`
+* PHP `7.1`
+* xDebug `2.5`
+* PostgresQL `9.6`
+* PHPUnit `7.0`
+
+=== Know issues
+
+* *"Bundler, the underlying system Vagrant uses to install plugins, reported an error."*
++
+To resolve the issue download the latest Vagrant image,
+use uninstall tool it's delivered with,
+then install Vagrant again.
+It should clean-up libraries/dependencies and resolve the issue.
+* *SSH private key not working*
++
+It's recommended to use git only on the host machine,
+as it's usually fully set up there.
+Yet, if you use git on the virtual machine,
+there might be a problem with access to private repos.
+The SSH keys are forwarded from host machine to virtual machine by Vagrant,
+but if they are not in the keychain (for MacOS) they won't work automatically.
+So make sure to run `ssh-add -K ~/.ssh/id_rsa` to add your private key to the keychain.
+
+== xTupleCommerce project setup
+
+Once the virtual machine is up and running,
+you can proceed with installation of your xTupleCommerce project(s).
+Each project has a standard set of steps, yet,
+it's recommended to always use the `README.adoc` file in the project itself,
+in case there were any customizations.
+
+It's recommended to start with the default
+https://github.com/xtuple/flywheel[Flywheel] project.
+
+Follow xTupleCommerce documentation to
+https://github.com/xtuple/php-xdruple-commerce/blob/master/docs/index.adoc#create-a-new-project[create a new project].
+
 == Provisioning with Ansible
 
 https://www.ansible.com[Ansible] is a configuration management tool
@@ -80,126 +278,3 @@ ansible-playbook \
   --inventory ansible/virtual.yml \
   ansible/provision.yml
 ----
-
-== Vagrant setup
-
-=== Assumptions
-
-* xTupleCommerce projects code is located in `~/Code/Drupal7` directory on the host machine.
-* xTuple PHP utility code is located in `~/Code/PHP` directory on the host machine.
-* Each xTupleCommerce directory name ends with `.xd`, e.g. `example.xd`.
-
-=== Installation
-
-* Update your operating system and packages:
-** _(MacOSX)_ if you use `link:https://brew.sh[brew]`,
-make sure `brew doctor` returns `Your system is ready to brew.`
-and `brew update` returns `Already up-to-date.`;
-** _(Ubuntu Linux)_ run `sudo apt-get update && sudo apt-get upgrade`
-** run `sudo gem update`.
-* Download and install the latest
-https://www.virtualbox.org/wiki/Downloads[VirtualBox].
-* Download and install the latest
-http://downloads.vagrantup.com[Vagrant].
-* Install https://www.ansible.com[Ansible].
-Follow their
-http://docs.ansible.com/ansible/latest/intro_installation.html[installation documentation].
-* Install `link:https://github.com/dotless-de/vagrant-vbguest[dotless-de/vagrant-vbguest]` plugin:
-run `vagrant plugin install vagrant-vbguest`.
-* Install `link:https://github.com/dustymabe/vagrant-sshfs[dustymabe/vagrant-sshfs]` plugin:
-run `vagrant plugin install vagrant-sshfs`.
-* _(MacOSX)_
-Install `link:https://github.com/BerlinVagrant/vagrant-dns[BerlinVagrant/vagrant-dns]` plugin:
-run `vagrant plugin install vagrant-dns`.
-* Clone https://github.com/amikheychik/xtuple-admin-utility[xTuple Admin Utility] repository:
-run
-[source,bash]
-----
-mkdir -p ~/Vagrant \
-&& git clone git@github.com:amikheychik/xtuple-admin-utility.git ~/Vagrant/xtau \
-&& cd $_
-----
-* Copy `vagrant.yaml.template` as `vagrant.yaml`:
-`cp vagrant.yaml.template vagrant.yaml`.
-* Edit `vagrant.yaml` with your local data:
-** ensure the IP address for virtual machine is not used (`192.168.33.xyz` pattern is recommended).
-** setup your local https://en.wikipedia.org/wiki/List_of_tz_database_time_zones[timezone].
-** setup the synced folders.
-** ensure you have the right host machine OS set.
-** setup your https://help.github.com/articles/creating-an-access-token-for-command-line-use[Github token].
-** setup your host machine username
-(run `whoami` in your terminal).
-* Run `vagrant up` to start your virtual machine.
-* Run `vagrant reload --provision` to reboot virtual machine.
-* _(MacOSX)_ Run `vagrant dns --install` to activate `vagrant-dns` plugin (user password will be asked).
-
-=== Directories
-
-- `~/Code` on the host machine
-would be available as `/opt/xtuple` on the virtual machine.
-`/opt/xtuple/portal` location is used by Nginx by default for xTupleCommerce.
-* `~/Vagrant/xtau` directory on the host machine
-would be available as `/vagrant` on the virtual machine.
-* `~/Vagrant/xtau/xtuple` directory is available as `/var/xtuple`,
-and it's primary purpose to store `.p12` keys
-retrieved from xTuple's mobile client and used for oAuth connection.
-* `~/Vagrant/xtau/output` directory's purpose is to store output from the server:
-** `~/Vagrant/xtau/output/xdebug` contains profiling files from xdebug
-(when profiling launched).
-
-=== xTupleCommerce project installation
-
-Once the virtual machine is up and running,
-you can proceed with installation of your xTupleCommerce project(s).
-Each project has a standard set of steps,
-yet, it's recommended to always use the `README.adoc` file in the project itself,
-in case there were any customizations.
-
-It's recommended to start with the default https://github.com/xtuple/flywheel[Flywheel] project.
-
-=== Host machine software
-
-* MacOSX `10.14.1`
-* VirtualBox `5.2.22`
-* Vagrant `2.2.2`
-
-=== Virtual machine software
-
-* Ubuntu `16.04`
-* Nginx `1.10`
-* PHP `7.1`
-* xDebug `2.5`
-* PostgresQL `9.6`
-* PHPUnit `7.0`
-
-=== Know issues
-
-* *"Bundler, the underlying system Vagrant uses to install plugins, reported an error."*
-+
-To resolve the issue download the latest Vagrant image,
-use uninstall tool it's delivered with,
-then install Vagrant again.
-It should clean-up libraries/dependencies and resolve the issue.
-* *SSH private key not working*
-+
-It's recommended to use git only on the host machine,
-as it's usually fully set up there.
-Yet, if you use git on the virtual machine,
-there might be a problem with access to private repos.
-The SSH keys are forwarded from host machine to virtual machine by Vagrant,
-but if they are not in the keychain (for MacOS) they won't work automatically.
-So make sure to run `ssh-add -K ~/.ssh/id_rsa` to add your private key to the keychain.
-
-== xTupleCommerce project setup
-
-Once the virtual machine is up and running,
-you can proceed with installation of your xTupleCommerce project(s).
-Each project has a standard set of steps, yet,
-it's recommended to always use the `README.adoc` file in the project itself,
-in case there were any customizations.
-
-It's recommended to start with the default
-https://github.com/xtuple/flywheel[Flywheel] project.
-
-Follow xTupleCommerce documentation to
-https://github.com/xtuple/php-xdruple-commerce/blob/master/docs/index.adoc#create-a-new-project[create a new project].

@@ -21,13 +21,15 @@ machines:
       name: 'virtualbox'
       memory: 2048
     provision:
-      shell:
-        path: src/vagrant.sh
+#      shell:
+#        path: src/vagrant.sh
       ansible:
         playbook: ansible/provision.yml
     folders:
       - host: './'
         guest: '/vagrant'
+      - host: '~/Code/xTuple'
+        guest: '/opt/xtuple'
     dns:
       tld: 'xd'
       patterns:
