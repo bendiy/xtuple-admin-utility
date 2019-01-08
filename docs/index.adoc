@@ -79,7 +79,7 @@ that are usually installed via user interface.
 +
 [source,bash]
 ----
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ----
 +
 . Update Brew formulae `brew update`
@@ -207,12 +207,12 @@ The SSH keys are forwarded from host machine to virtual machine by Vagrant,
 but if they are not in the keychain (for MacOS) they won't work automatically.
 So make sure to run `ssh-add -K ~/.ssh/id_rsa` to add your private key to the keychain.
 
-== xTupleCommerce project setup
+=== xTupleCommerce project setup
 
 Once the virtual machine is up and running,
 you can proceed with installation of your xTupleCommerce project(s).
 Each project has a standard set of steps, yet,
-it's recommended to always use the `README.adoc` file in the project itself,
+always use the `README.adoc` file in the project itself,
 in case there were any customizations.
 
 It's recommended to start with the default
@@ -223,20 +223,48 @@ https://github.com/xtuple/php-xdruple-commerce/blob/master/docs/index.adoc#creat
 
 == Provisioning with Ansible
 
-https://www.ansible.com[Ansible] is a configuration management tool
-that is used provisioning.
+https://www.ansible.com[Ansible] is a configuration management tool that is used for provisioning.
+Ansible allows to provide an inventory of (remote) hosts,
+and run a set of playbooks to provision them.
+The set of playbooks may differ between hosts or host groups.
+Ansible requires Python to be installed on the machine from which inventory provisioning will be launched.
+It may also require additional Python modules installed for specific operations.
 
-* Ensure that Python and Python3 are installed in your system:
-run `python --version` and `python3 --version`.
-* Install https://pip.readthedocs.io/en/stable/installing/[Pip]:
+=== Installation
+
+==== MacOSX
+
+. Clone  https://github.com/amikheychik/xtuple-admin-utility[xTuple Admin Utility] repository
+to the directory for virtual machines setup (e.g. `~/Vagrant`):
 +
 [source,bash]
 ----
-wget https://bootstrap.pypa.io/get-pip.py \
-&& sudo python get-pip.py \
-&& rm get-pip.py
+mkdir -p ~/Vagrant \
+&& git clone git@github.com:amikheychik/xtuple-admin-utility.git ~/Vagrant/xtau \
+&& cd $_
 ----
-* Install required Python packages: `sudo pip install -r requirements.txt`
++
+. Upgrade Ruby gems: `sudo gem update`
+(`/usr/bin/ruby` and `/usr/bin/gem` are pre-installed on MacOSX)
+. Install `brew`:
++
+[source,bash]
+----
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+----
++
+. Update Brew formulae `brew update`
+. Upgrade packages installed with Brew: `brew upgrade`
+. Check if there are any problem: `brew doctor`
+(should return `Your system is ready to brew.`)
+. Install Python 3: `brew install python3`
+(it also installs https://pip.pypa.io/[Pip] as `pip3`)
+. Install Ansible: `brew install ansible`
+. Install required Python modules: `pip3 install -r requirements.txt`
+
+=== Remote hosts provisioning
+
+Work in progress…
 
 === Virtual machines provisioning
 
