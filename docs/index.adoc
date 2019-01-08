@@ -75,7 +75,13 @@ that are usually installed via user interface.
 
 . Upgrade Ruby gems: `sudo gem update`
 (`/usr/bin/ruby` and `/usr/bin/gem` are pre-installed on MacOSX)
-. Install `brew`: `/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
+. Install `brew`:
++
+[source,bash]
+----
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+----
++
 . Update Brew formulae `brew update`
 . Upgrade packages installed with Brew: `brew upgrade`
 . Check if there are any problem: `brew doctor`
@@ -96,7 +102,7 @@ run: `vagrant plugin install vagrant-sshfs`
 run: `vagrant plugin install vagrant-dns`
 +
 [IMPORTANT]
-This plugin is only compatible with MacOSX and *must not* be installed on Linux or Windows.
+`vagrant-dns` plugin is only compatible with MacOSX and *must not* be installed on Linux or Windows.
 +
 . Clone  https://github.com/amikheychik/xtuple-admin-utility[xTuple Admin Utility] repository
 to the directory for virtual machines setup (e.g. `~/Vagrant`):
@@ -108,7 +114,7 @@ mkdir -p ~/Vagrant \
 && cd $_
 ----
 +
-Vagrant commands should be run from this directory (`~/Vagrant/xtau`)
+Vagrant commands should be run from the `~/Vagrant/xtau` directory.
 
 ==== Linux
 
