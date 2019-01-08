@@ -70,7 +70,7 @@ use output directory (`./var`) for backups (e.g. `./var/backups`).
 ==== MacOSX
 
 MacOSX installation uses https://brew.sh[Homebrew] as a package manager for MacOS
-and https://github.com/Homebrew/homebrew-cask[Homebrew Cask] for applications
+and https://caskroom.io[Homebrew Cask] for applications
 that are usually installed via user interface.
 
 . Upgrade Ruby gems: `sudo gem update`
