@@ -8,6 +8,18 @@
 xTuple Admin Utility can be used to prepare (provision) remote servers
 and local virtual machines to work on or launch xTuple ERP server.
 
+== Documentation
+
+This documentation is written in http://asciidoc.org[AsciiDoc] format
+and can be compiled with https://asciidoctor.org[AsciiDoctor]:
+
+[source,bash]
+----
+asciidoctor --backend html5 --doctype book --destination-dir target/docs docs/index.adoc
+----
+
+A nicely designed and easy to read HTML will be available as: `target/docs/index.html`
+
 == Local development with Vagrant
 
 https://www.vagrantup.com[Vagrant] is a tool for building and managing virtual machines.
