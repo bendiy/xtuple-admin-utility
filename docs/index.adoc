@@ -132,21 +132,21 @@ but all the software (except `vagrant-dns` plugin) supports Windows.
 . Copy `vagrant.yaml.template` as `vagrant.yaml`:
 `cp vagrant.yaml.template vagrant.yaml`.
 . Edit `vagrant.yaml` with your local data:
-.* ensure the IP address for virtual machine is not used
+** ensure the IP address for virtual machine is not used
 (`192.168.33.xyz` pattern is recommended).
 If that's your first Vagrant machine, default IP `192.168.33.10` should work.
-.* setup your local https://en.wikipedia.org/wiki/List_of_tz_database_time_zones[timezone].
-.* change `~/Code/xTuple` directory to the directory with the code.
+** setup your local https://en.wikipedia.org/wiki/List_of_tz_database_time_zones[timezone].
+** change `~/Code/xTuple` directory to the directory with the code.
 (`/opt/xtuple` should remain as is).
-.* ensure you have the right host machine OS set.
-.* setup your https://help.github.com/articles/creating-an-access-token-for-command-line-use[Github token].
-.* setup your host machine username
+** ensure you have the right host machine OS set.
+** setup your https://help.github.com/articles/creating-an-access-token-for-command-line-use[Github token].
+** setup your host machine username
 (should be what `whoami` returns in your terminal).
 . Run `vagrant up` to start your virtual machine.
 . Run `vagrant reload --provision` to reboot virtual machine.
 . *(MacOSX only)* Run `vagrant dns --install` to activate `vagrant-dns` plugin
 (`sudo` password will be asked).
-.* Run `ping xtuple.xd` to check that DNS is working.
+** Run `ping xtuple.xd` to check that DNS is working.
 
 === Directories
 
