@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 DATABASE=xdruple_1_1_x
-DATABASE_BACKUP=/vagrant/var/backups/prodiem_stage_erp-2018-10-05.backup
-DATABASE_ENCRYPTION=/vagrant/var/backups/prodiem_stage_erp_encryption_key.txt
+DATABASE_BACKUP=/vagrant/var/backups/xdruple.backup
+DATABASE_ENCRYPTION=/vagrant/var/backups/xdruple.encryption.txt
 DATABASE_PASSWORD='admin'
 APPLICATION='http://flywheel.xd/'
 
 sudo cp ${DATABASE_ENCRYPTION} /etc/xtuple/${DATABASE}/private/encryption.txt
+
+sudo systemctl stop xtuple-${DATABASE}
 
 sudo -u postgres psql -c "DROP DATABASE IF EXISTS ${DATABASE}"
 sudo -u postgres psql -c "CREATE DATABASE ${DATABASE} OWNER = 'admin'"
@@ -62,4 +64,4 @@ pushd ${XTUPLE_REPOS_DIR}
     popd
 popd
 
-sudo systemctl restart xtuple-${DATABASE}
+sudo systemctl start xtuple-${DATABASE}
