@@ -74,14 +74,14 @@ xtau_erp_packages:
 
 xtau_erp_nvm:
   source: /usr/local/src/nvm
-  version: 'v0.33.11'
+  version: 'v0.34.0'
 
 xtau_erp_databases:
   - name: xdruple_1_0_x
     node: 0.10.48
     port: 8443
   - name: xdruple_1_1_x
-    node: 8.11.4
+    node: 8.15.0
     port: 8444
 
 xtau_erp_configuration_path: /etc/xtuple
