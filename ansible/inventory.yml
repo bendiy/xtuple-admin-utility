@@ -1,7 +1,25 @@
 ---
-- import_playbook: aws/aws.yml
-  tags: ['aws']
-- import_playbook: provision.yml
-  tags: ['provision']
-- import_playbook: deploy.yml
-  tags: ['deploy']
+all:
+  vars:
+    github:
+      token: ''
+    timezone: 'America/New_York'
+    setup_type: server
+    ansible_user: ubuntu
+  hosts:
+    flywheel.xtuplecloud.com:
+      domain: flywheel.xtuplecloud.com
+      domain_alias: flywheel.xtuplecloud.com
+      xtau_erp_databases:
+      - name: xtc_1_0_10
+        node: 0.10.48
+        port: 8443
+      - name: xtc_1_1_x
+        node: 8.15.0
+        port: 8444
+      development_db_pass: development
+      stage_db_pass: stage
+      production_db_pass: production
+      http_auth_name: xtuple
+      http_auth_pass: flywheel
+      root_pass: root
