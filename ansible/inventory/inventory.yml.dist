@@ -1,0 +1,27 @@
+example:
+  hosts:
+    example.xtuplecloud.com:
+      domain: example.com
+      domain_alias: example.xtuplecloud.com
+      timezone: America/New_York
+      root_pass: root
+      deployer_pass: deployer
+      http_auth_pass: flywheel
+      environments: [dev, stage, live]
+      development_db_pass: development
+      stage_db_pass: stage
+      production_db_pass: production
+      github:
+        token: github_token
+xdruple:
+  hosts:
+  vars:
+    setup_type: server
+    timezone: America/New_York
+    ansible_user: root
+    deployer_name: deployer
+    environments: [dev, stage, live]
+    http_auth_name: xtuple
+    development_db_pass: development
+    stage_db_pass: stage
+    production_db_pass: production

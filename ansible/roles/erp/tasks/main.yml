@@ -1,0 +1,22 @@
+---
+
+- name: Run development environment setup tasks
+  include_tasks: development.yml
+  when: setup_type == 'local'
+
+- name: Install common packages
+  apt:
+    name: '{{ item.apt }}'
+    state: latest
+  loop: '{{ xtau_erp_packages.common|flatten(levels=1) }}'
+
+- name: Install NVM
+  include_tasks: nvm.yml
+
+- name: Install NodeJS v{{ item.node }}
+  shell: 'nvm install {{ item.node }}'
+  loop: '{{ xtau_erp_databases }}'
+
+- name: Setup ERP databases
+  include_tasks: database.yml
+  with_items: '{{ xtau_erp_databases }}'

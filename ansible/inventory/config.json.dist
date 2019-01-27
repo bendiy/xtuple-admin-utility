@@ -1,0 +1,17 @@
+{
+  "digital_ocean": {
+    "token": "",
+    "public_key": {
+      "name": "",
+      "path": "~/.ssh/id_rsa.pub"
+    }
+  },
+  "aws": {
+    "access_key": "",
+    "secret_key": "",
+    "region": "us-east-1"
+  },
+  "github": {
+    "token": ""
+  }
+}

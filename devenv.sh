@@ -158,8 +158,8 @@ build_xtc_apidocs () {
   git fetch origin
   git reset --hard origin/master
   apigen generate --source /home/deployer/source/xdruple/xdruple \
-                  --destination /var/www/xdruple/api \
                   --config /home/deployer/source/xdruple/apigen.neon \
+                  --destination /var/www/xdruple/api \
                   --quiet
   RET=$?
   cd $STARTDIR

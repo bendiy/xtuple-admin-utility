@@ -1,0 +1,29 @@
+{
+  "local": {
+    "hosts": [
+      "localhost"
+    ],
+    "vars": {
+      "ansible_python_interpreter": "python",
+      "xtuple": {
+        "hosts": []
+      }
+    }
+  },
+  "aws": {
+    "hosts": [],
+    "vars": {
+      "ansible_ssh_user": "ubuntu"
+    }
+  },
+  "digital_ocean": {
+    "hosts": [],
+    "vars": {
+      "ansible_ssh_user": "root",
+      "ansible_python_interpreter": "python3"
+    }
+  },
+  "_meta": {
+    "hostvars": {}
+  }
+}

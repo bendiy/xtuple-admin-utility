@@ -1,0 +1,20 @@
+---
+all:
+  vars:
+    # Host machine operating system:
+    # - macos    - for MacOSX
+    # - linux    - for Linux
+    # - windows  - for Windows
+    host:
+      os: macos
+      username: ''
+    github:
+      token: ''
+    timezone: 'America/New_York'
+    setup_type: local
+    ansible_user: vagrant
+    deployer_name: vagrant
+    deployer_pass: vagrant
+  hosts:
+    192.168.33.10:
+      domain: development.xtau

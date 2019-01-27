@@ -1,0 +1,40 @@
+---
+
+- stat:
+    path: '{{ ansible_env.HOME }}/.xtuple_plv8'
+  register: xtuple_plv8_file
+- shell: cat '{{ ansible_env.HOME }}/.xtuple_plv8'
+  when: xtuple_plv8_file.stat.exists
+  register: plv8_checksum
+- block:
+    - name: Install dependencies
+      apt:
+        name: libc++1
+        state: latest
+    - name: Download xTuple plv8 build
+      get_url:
+        url: http://updates.xtuple.com/updates/plv8/linux64/xtuple_plv8.tgz
+        dest: /tmp
+      register: plv8
+    - name: Store plv8 archive info
+      copy:
+        content: '{{ plv8.checksum_src }}'
+        dest: "{{ ansible_env.HOME }}/.xtuple_plv8"
+    - name: Extract plv8 build
+      unarchive:
+        src: /tmp/xtuple_plv8.tgz
+        remote_src: yes
+        dest: /tmp
+    - name: Install plv8
+      shell: echo '' | sudo ./install_plv8.sh
+      args:
+        chdir: /tmp/xtuple_plv8
+    - name: Remove downloaded plv8 build archive
+      file:
+        path: /tmp/xtuple_plv8.tgz
+        state: absent
+    - name: Remove downloaded plv8 build directory
+      file:
+        path: /tmp/xtuple_plv8
+        state: absent
+  when: not xtuple_plv8_file.stat.exists

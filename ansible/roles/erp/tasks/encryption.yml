@@ -1,0 +1,16 @@
+---
+
+- name: Check {{ file.name }}
+  stat:
+    path: '{{ xtau_erp_configuration_path }}/{{ item.name }}/private/{{ file.name }}'
+  register: path
+
+- block:
+  - name: Generate random data for {{ file.name }}
+    shell: cat /dev/urandom | tr -dc '0-9a-zA-Z!@#$%^&*_+-'| head -c 64
+    register: random
+  - name: Save {{ file.name }} file
+    copy:
+      content: '{{ random.stdout }}'
+      dest: '{{ xtau_erp_configuration_path }}/{{ item.name }}/private/{{ file.name }}'
+  when: not path.stat.exists

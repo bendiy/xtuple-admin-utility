@@ -1,0 +1,31 @@
+---
+
+- name: Create {{ item.ssl }}
+  file:
+    path: '{{ item.ssl }}'
+    state: directory
+- name: Generate self-signed SSL certificate
+  shell: openssl req -x509 -newkey rsa:4096 -subj /CN={{ item.host }}.{{ item.domain }} -days 365 -nodes -keyout {{ item.ssl }}/{{ item.key }} -out {{ item.ssl }}/{{ item.certificate }}
+  args:
+    creates: '{{ item.ssl }}/{{ item.key }}'
+- name: Setup {{ item.name }}
+  template:
+    src: sites-available/{{ item.template }}.j2
+    dest: /etc/nginx/sites-available/{{ item.site }}.conf
+  vars:
+    site: '{{ item.site }}'
+    erp_hostname: '{{ item.host }}'
+    erp_domain: '{{ item.domain }}'
+    port: '{{ item.port }}'
+    ssl_certificate: '{{ item.ssl }}/{{ item.certificate }}'
+    ssl_certificate_key: '{{ item.ssl }}/{{ item.key }}'
+- name: Enable {{ item.name }}
+  file:
+    src: /etc/nginx/sites-available/{{ item.site }}.conf
+    dest: /etc/nginx/sites-enabled/{{ item.site }}.conf
+    state: link
+  notify: Restart Nginx
+- name: Create /var/log/nginx/{{ item.site }} directory
+  file:
+    path: /var/log/nginx/{{ item.site }}
+    state: directory

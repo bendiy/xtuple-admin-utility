@@ -1,0 +1,26 @@
+---
+
+- name: Add instance to the inventory
+  add_host:
+    hostname: '{{ result.item.domain_alias }}'
+    groups:
+      - aws
+      - xdruple
+      - deploy
+      - '{{ result.item.name }}'
+    ansible_host: '{{ result.item.domain_alias }}'
+    ansible_ssh_host: '{{ result.instances[0].public_dns_name }}'
+    ansible_ssh_user: ubuntu
+    ansible_ssh_private_key_file: "ansible/hosts/{{ result.item.domain_alias }}/keys/{{ result.item.key }}.pem"
+  when: result.instances is defined
+- name: Wait for SSH to become available
+  wait_for:
+    host: '{{ item.public_dns_name }}'
+    port: 22
+    state: started
+  with_items: '{{ result.instances }}'
+  when: result.instances is defined
+#- name: Write the new  host key to known_hosts
+#  shell: 'ssh-keyscan -H {{ item.public_dns_name }} >> ~/.ssh/known_hosts'
+#  with_items: '{{ result.instances }}'
+#  when: result.instances is defined

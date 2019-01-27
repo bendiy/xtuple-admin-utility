@@ -1,0 +1,14 @@
+# PostgreSQL Client Authentication Configuration File
+# TYPE      DATABASE    USER            ADDRESS                 METHOD
+hostnossl   all         +xtrole         127.0.0.1/0             trust
+hostnossl   all         postgres        127.0.0.1/0             trust
+hostnossl   all         all             0.0.0.0/0               md5
+hostssl     all         +xtrole         127.0.0.1/0             trust
+hostssl     all         postgres        127.0.0.1/0             trust
+hostssl     all         all             0.0.0.0/0               md5
+
+local       all         postgres                                peer
+local       all         {{ deployer_name }}                     peer
+
+host        all         all             127.0.0.1/32            md5
+host        all         all             ::1/128                 md5

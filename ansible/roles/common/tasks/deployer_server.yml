@@ -1,0 +1,26 @@
+---
+
+- name: Change root user password
+  user:
+    name: root
+    password: "{{ root_pass|password_hash('sha512') }}"
+- name: Create xTuple API keys directory
+  file:
+    path: /var/xtuple/keys
+    state: directory
+- name: Backup original /etc/ssh/sshd_config
+  copy:
+    src: /etc/ssh/sshd_config
+    dest: /etc/ssh/sshd_config.original
+    remote_src: yes
+- name: Update SSHd config
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0600'
+    validate: /usr/sbin/sshd -t -f %s
+  notify:
+    - Restart sshd
+

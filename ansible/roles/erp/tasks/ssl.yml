@@ -1,0 +1,26 @@
+---
+
+- name: Generate a private key
+  shell: 'openssl genrsa -des3 -out {{ private_path }}/server.key -passout pass:xtuple 4096'
+  args:
+    creates: '{{ private_path }}/server.key'
+
+- name: Generate a public key
+  shell: "openssl rsa -in {{ private_path }}/server.key -passin pass:xtuple -out {{ private_path }}/server.pem -passout pass:xtuple"
+  args:
+    creates: '{{ private_path }}/server.pem'
+
+- name: Generate a certificate request
+  shell: "openssl req -batch -new -key {{ private_path }}/server.pem -out {{ private_path }}/server.csr -subj '/CN='{{ ansible_hostname }}"
+  args:
+    creates: '{{ private_path }}/server.csr'
+
+- name: Generate a self-signed SSL certificate
+  shell: "openssl x509 -req -days 365 -in {{ private_path }}/server.csr -signkey {{ private_path }}/server.pem -out {{ private_path }}/server.crt"
+  args:
+    creates: '{{ private_path }}/server.crt'
+
+- name: Allow to read server.pem
+  file:
+    dest: '{{ private_path }}/server.pem'
+    mode: u=rw,g=r,o=r

@@ -1,0 +1,88 @@
+---
+
+xtau_erp_packages:
+  common:
+    - apt: build-essential
+    - apt: bzip2
+    - apt: cups
+    - apt: curl
+    - apt: dialog
+    - apt: git
+    - apt: jq
+    - apt: libauthen-pam-perl
+    - apt: libavahi-compat-libdnssd-dev
+    - apt: libc++1
+    - apt: libio-pty-perl
+    - apt: libnet-ssleay-perl
+    - apt: libpam-runtime
+    - apt: libssl-dev
+    - apt: openssl
+    - apt: ntp
+    - apt: perl
+    - apt: python
+    - apt: python-magic
+    - apt: python-software-properties
+    - apt: s3cmd
+    - apt: unzip
+    - apt: wget
+    - apt: whiptail
+    - apt: xsltproc
+  development:
+    - apt: bison
+    - apt: flex
+    - apt: gperf
+    - apt: libasound2-dev
+    - apt: libbz2-dev
+    - apt: libcap-dev
+    - apt: libcups2-dev
+    - apt: libdrm-dev
+    - apt: libfontconfig1-dev
+    - apt: libgcrypt11-dev
+    - apt: libglu1-mesa-dev
+    - apt: libgstreamer-plugins-base0.10-dev
+    - apt: libgstreamer0.10-dev
+    - apt: libicu-dev
+    - apt: libkrb5-dev
+    - apt: libldap2-dev
+    - apt: libmysqlclient-dev
+    - apt: libnss3-dev
+    - apt: libpam0g-dev
+    - apt: libpci-dev
+    - apt: libperl-dev
+    - apt: libpq-dev
+    - apt: libpulse-dev
+    - apt: libreadline6-dev
+    - apt: libsqlite0-dev
+    - apt: libssl-dev
+    - apt: libudev-dev
+    - apt: libx11-xcb-dev
+    - apt: libxcb*
+    - apt: libxcomposite-dev
+    - apt: libxcursor-dev
+    - apt: libxdamage-dev
+    - apt: libxi-dev
+    - apt: libxml2-dev
+    - apt: libxrandr-dev
+    - apt: libxrender-dev
+    - apt: libxslt1-dev
+    - apt: libxtst-dev
+    - apt: readline-common
+    - apt: ruby
+    - apt: unixodbc-dev
+    - apt: xorg
+    - apt: zlib1g-dev
+
+xtau_erp_nvm:
+  source: /usr/local/src/nvm
+  version: 'v0.34.0'
+
+xtau_erp_databases:
+  - name: xdruple_1_0_x
+    node: 0.10.48
+    port: 8443
+  - name: xdruple_1_1_x
+    node: 8.15.0
+    port: 8444
+
+xtau_erp_configuration_path: /etc/xtuple
+xtau_erp_node_path: /opt/xtuple/node

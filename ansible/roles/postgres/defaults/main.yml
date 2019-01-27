@@ -1,0 +1,14 @@
+---
+
+postgres_version: 9.6
+
+postgres_clusters:
+  - name: xtuple
+    version: '{{ postgres_version }}'
+    port: 5432
+    locale: '{{ locale }}'
+    start_conf: auto # auto | manual | disabled
+    databases:
+      - name: '{{ deployer_name }}'
+        user: '{{ deployer_name }}'
+        password: '{{ deployer_pass }}'

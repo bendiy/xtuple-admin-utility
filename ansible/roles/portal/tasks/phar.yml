@@ -1,0 +1,8 @@
+---
+# PHAR download
+- name: Install {{ item.name }} {{ item.version }}
+  get_url:
+    url: '{{ item.url }}'
+    dest: /usr/local/bin/{{ item.bin }}
+    checksum: '{{ item.checksum }}'
+    mode: 0755

@@ -29,13 +29,21 @@ Vagrant.configure('2') do |config|
       if machine.key?('provision')
         vars = setup.reject { |k| k == 'machines' }
         vars = vars.merge(machine['vars']).merge(
-          setup_type: 'vagrant',
+          setup_type: 'local',
+          ansible_user: 'vagrant',
           deployer_name: 'vagrant',
-          deployer_pass: 'vagrant'
+          deployer_pass: 'vagrant',
+          machine_name: name,
+          domain: configure.vm.hostname
         )
         if machine['provision'].key?('shell')
           configure.vm.provision 'shell' do |shell|
             vagrant_provision_shell(shell, vars, machine['provision']['shell'])
+          end
+        end
+        if machine['provision'].key?('ansible')
+          configure.vm.provision 'ansible' do |ansible|
+            vagrant_provision_ansible(ansible, vars, machine['provision']['ansible'])
           end
         end
       end
@@ -51,14 +59,21 @@ end
 
 def vagrant_dns(machine, config)
   return unless Vagrant.has_plugin? 'vagrant-dns'
-  machine.dns.tld = config['tld']
+
+  if config.key?('tlds')
+    machine.dns.tlds = config['tlds']
+  elsif config.key?('tld')
+    machine.dns.tld = config['tld']
+  end
   machine.dns.patterns = config['patterns'].map { |e| Regexp.new(e) }
 end
 
 def vagrant_provider(vm, name, provider)
   vm.provider 'virtualbox' do |vb|
     vb.name = name
+    # See VBoxManage (https://www.virtualbox.org/manual/ch08.html)
     vb.customize ['modifyvm', :id, '--memory', provider['memory']]
+    vb.customize ['modifyvm', :id, '--uartmode1', 'file', "./var/virtualbox/#{name}.log"]
     # Via http://blog.liip.ch/archive/2012/07/25/vagrant-and-node-js-quick-tip.html
     vb.customize ['setextradata', :id, 'VBoxInternal2/SharedFoldersEnableSymlinksCreate/vagrant', '1']
     vb.gui = false
@@ -75,4 +90,11 @@ def vagrant_provision_shell(shell, vars, machine)
     vars[:deployer_pass],
     vars[:deployer_name]
   ]
+end
+
+def vagrant_provision_ansible(ansible, vars, config)
+  # ansible.verbose = 'v'
+  ansible.compatibility_mode = '2.0'
+  ansible.playbook = config['playbook']
+  ansible.extra_vars = vars
 end

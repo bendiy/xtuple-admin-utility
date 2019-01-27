@@ -1,0 +1,6 @@
+---
+# Install PEAR packages
+- name: Install {{ item.name }}
+  pear:
+    name: '{{ item.name }}'
+    state: latest

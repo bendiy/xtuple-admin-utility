@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+export NVM_HOME={{ xtau_erp_nvm.source }}
+
+if [ -f ${NVM_HOME}/nvm.sh ]; then
+  source ${NVM_HOME}/nvm.sh
+  nvm ${@}
+fi

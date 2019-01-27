@@ -1,0 +1,22 @@
+# -*- mode: nginx; mode: flyspell-prog;  ispell-current-dictionary: american -*-
+
+## Return (no rewrite) server block.
+server {
+    listen 80;
+    server_name www.{{ domain }};
+    return 301 $scheme://{{ domain }}$request_uri;
+}
+
+## HTTP server.
+server {
+    listen 80;
+    server_name {{ domain }};
+    limit_conn arbeit 32;
+
+    access_log /var/log/nginx/{{ environment }}/access.log;
+    error_log /var/log/nginx/{{ environment }}/error.log;
+    root /opt/xtuple/portal/{{ environment }}/drupal/core;
+
+    include apps/drupal/security.conf;
+    include apps/drupal/drupal.conf;
+} # HTTP server
