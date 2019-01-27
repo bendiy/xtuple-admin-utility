@@ -322,12 +322,15 @@ EOSCRIPT
     CREATE EXTENSION IF NOT EXISTS plv8;
 EOSCRIPT
   log "Restoring database $DATABASE from file $1 on server $PGHOST:$PGPORT"
-  pg_restore --username "$PGUSER" --port "$PGPORT" --host "$PGHOST" --dbname "$DATABASE" "$1" 2>restore_output.log
+  pg_restore "$1" | sed -e 's/CREATE SCHEMA/CREATE SCHEMA IF NOT EXISTS/g' | psql --username "$PGUSER" --port "$PGPORT" --host "$PGHOST" --dbname "$DATABASE" 2>restore_output.log
   RET=$?
   if [ $RET -ne 0 ]; then
     msgbox "$(cat restore_output.log)"
     return $RET
   fi
+
+  # If database is web enabled, add to config.js
+    find /etc/xtuple -name 'config.js' -exec sed -i "/databases/s/\]\,/\,\ \"$DATABASE\"\]\,/g" {} \;
 
   return 0
 }
@@ -387,6 +390,10 @@ drop_database() {
         msgbox "Dropping database $DATABASE failed. Please check the output and correct any issues."
         return $RET
       fi
+
+      # If database is web enabled, update config.js
+      find /etc/xtuple -name 'config.js' -exec sed -i "/databases/s/\,\ \"$DATABASE\"//g" {} \;
+
       msgbox "Dropping database $DATABASE successful"
     else
       return 0
@@ -436,6 +443,10 @@ rename_database() {
     msgbox "Renaming database $SOURCE failed. Please check the output and correct any issues."
     return $RET
   fi
+
+  # If database is web enabled, update config.js
+  find /etc/xtuple -name 'config.js' -exec sed -i "/databases/s/$SOURCE/$DEST/g" {} \;
+
   msgbox "Successfully renamed database $SOURCE to $DEST"
 }
 

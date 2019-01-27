@@ -159,10 +159,10 @@ install_prereqs() {
       # TODO: prune this list if possible (e.g. build-essential?)
       sudo apt-get --quiet -y install \
                               build-essential bzip2 cups curl dialog git jq       \
-                              libauthen-pam-perl libavahi-compat-libdnssd-dev libc++1  \
+                              libauthen-pam-perl libavahi-compat-libdnssd-dev     \
                               libc++1 libio-pty-perl libnet-ssleay-perl libpam-runtime \
                               libssl-dev openssl ntp perl postgresql-client-$PGVER     \
-                              python python-magic python-software-properties s3cmd     \
+                              python python-magic s3cmd     \
                               unzip wget whiptail xsltproc xvfb
       RET=$?
       if [ $RET -ne 0 ]; then
@@ -171,6 +171,10 @@ install_prereqs() {
 
       if $IS_DEV_ENV ; then
         sudo apt-get --quiet -y install g++ gcc make vim zsh
+      fi
+
+      if [ "$CODENAME" != "bionic"]; then
+        sudo apt-get --quiet -y install python-software-properties
       fi
 
       # Install LE prerequsites
@@ -194,7 +198,8 @@ install_pg_repo() {
   case "$CODENAME" in
     "trusty") ;&
     "utopic") ;&
-    "xenial")
+    "xenial") ;&
+    "bionic")
         # check to make sure the PostgreSQL repo is already added on the system
         if [ ! -f /etc/apt/sources.list.d/pgdg.list ] || ! grep -q "apt.postgresql.org" /etc/apt/sources.list.d/pgdg.list; then
           sudo bash -c "wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -"
@@ -204,10 +209,20 @@ install_pg_repo() {
   esac
 }
 
-# $1 is the port
-# $2 is protocol
+# check if a network port is available
+# $1 is the port number
 is_port_open() {
-  (echo >/dev/$2/localhost/$1) &>/dev/null && return 0 || return 1
+  local INUSE=0 PORT=$1
+
+  if command -v lsof > /dev/null ; then
+    lsof -P -i :${PORT} -t >/dev/null
+    INUSE=$?
+  else
+    echo >/dev/tcp/localhost/$PORT && echo >/dev/udp/localhost/$PORT &>/dev/null
+    INUSE=$?
+  fi
+  [ $INUSE -eq 0 ] && return 1
+  return 0
 }
 
 new_postgres_port() {
@@ -259,7 +274,8 @@ service_start () {
         log_exec sudo service $SERVICE start
         ;;
       "vivid") ;&
-      "xenial")
+      "xenial") ;&
+      "bionic")
         log_exec sudo systemctl enable $SERVICE
         log_exec sudo systemctl start  $SERVICE
         ;;
@@ -281,7 +297,8 @@ service_stop () {
         log_exec sudo service $SERVICE stop
         ;;
       "vivid") ;&
-      "xenial")
+      "xenial") ;&
+      "bionic")
         log_exec sudo systemctl stop    $SERVICE
         log_exec sudo systemctl disable $SERVICE
         ;;
@@ -307,7 +324,8 @@ service_restart () {
         RET=$?
         ;;
       "vivid") ;&
-      "xenial")
+      "xenial") ;&
+      "bionic")
         log_exec sudo systemctl enable  $SERVICE
         log_exec sudo systemctl restart $SERVICE
         RET=$?
@@ -341,7 +359,8 @@ service_reload () {
         RET=$?
         ;;
       "vivid") ;&
-      "xenial")
+      "xenial") ;&
+      "bionic")
         log_exec sudo systemctl reload $SERVICE
         RET=$?
         ;;
